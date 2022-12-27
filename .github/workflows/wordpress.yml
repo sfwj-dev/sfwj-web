@@ -1,4 +1,4 @@
-name: Ga Communicator CI
+name: WordPress Plugin CI/CD
 
 on:
   push:
@@ -17,17 +17,8 @@ jobs:
       matrix:
         operating-system: [ ubuntu-latest ]  # OS. ubuntu-18.04 is also available.
         php: [ '7.4', '8.0' ] # PHP versions to check.
-        wp: [ 'latest' ]      # WordPress version to check.
+        wp: [ 'latest', '6.0' ]      # WordPress version to check.
         tools: [ composer ]
-        include:
-          - operating-system: ubuntu-18.04
-            php: 5.6
-            tools: composer:v2.2
-            wp: latest
-          - operating-system: ubuntu-18.04
-            php: 5.6
-            tools: composer:v2.2
-            wp: 5.9
 
     services:
       mysql:
@@ -89,15 +80,15 @@ jobs:
     name: Release Build for Composer
     needs: [ test, assets ]
     if: contains(github.ref, 'tags/')
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
 
       - name: Setup PHP with composer v2
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 5.6
-          tools: composer:v2.2
+          php-version: 7.4
+          tools: composer
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
