@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Activate plugin
  */
-add_action( 'plugin_loaded', function() {
+add_action( 'plugins_loaded', function() {
 	// Activate translations.
 	load_plugin_textdomain( 'sfwj', false, basename( __DIR__ ) . '/languages' );
 	// Load everything php file in 'includes' directory.
