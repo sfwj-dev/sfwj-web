@@ -1,0 +1,18 @@
+{
+	"plugins": [
+		".",
+		"https://downloads.wordpress.org/plugin/bogo.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/custom-field-suite.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/custom-post-type-ui.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/filebird.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/query-monitor.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/user-role-editor.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/vk-all-in-one-expansion-unit.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/vk-block-patterns.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/vk-blocks.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/wp-multibyte-patch.latest-stable.zip"
+	],
+	"themes": [
+		"https://downloads.wordpress.org/theme/lightning.latest-stable.zip"
+	]
+}
