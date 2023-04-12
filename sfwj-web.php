@@ -25,4 +25,5 @@ add_action( 'plugins_loaded', function() {
 	load_plugin_textdomain( 'sfwj', false, basename( __DIR__ ) . '/languages' );
 	// Load everything php file in 'includes' directory.
 	require_once  __DIR__ . '/includes/functions.php';
+	require_once __DIR__ . '/includes/settings.php';
 } );

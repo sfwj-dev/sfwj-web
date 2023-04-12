@@ -10,9 +10,11 @@
 		"https://downloads.wordpress.org/plugin/vk-all-in-one-expansion-unit.latest-stable.zip",
 		"https://downloads.wordpress.org/plugin/vk-block-patterns.latest-stable.zip",
 		"https://downloads.wordpress.org/plugin/vk-blocks.latest-stable.zip",
-		"https://downloads.wordpress.org/plugin/wp-multibyte-patch.latest-stable.zip"
+		"https://downloads.wordpress.org/plugin/wp-multibyte-patch.latest-stable.zip",
+		"./addons/plugins/vk-all-in-one-expansion-unit",
+		"./addons/plugins/vk-blocks-pro"
 	],
 	"themes": [
-		"https://downloads.wordpress.org/theme/lightning.latest-stable.zip"
+		"./addons/themes/lightning-pro"
 	]
 }
