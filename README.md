@@ -23,6 +23,19 @@ W.I.P
 
 開発にはcomposerとnpmが必要です。
 
+### 有償テーマを配置する
+
+`addons` ディレクトリに以下のプラグイン・テーマをダウンロードしてください。
+
+```
+- addons
+  - themes
+    - lightning-pro
+  - plugins
+    - vk-all-in-one-expansin-unit
+    - vk-blocks-pro
+```
+
 ### ローカルのWordPressをセットアップする
 
 ```

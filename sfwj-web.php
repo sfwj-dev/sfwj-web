@@ -17,6 +17,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Invalid request.' );
 }
 
+// Load composer autoloader.
+require_once __DIR__ . '/vendor/autoload.php';
+
 /**
  * Activate plugin
  */
@@ -26,4 +29,10 @@ add_action( 'plugins_loaded', function() {
 	// Load everything php file in 'includes' directory.
 	require_once  __DIR__ . '/includes/functions.php';
 	require_once __DIR__ . '/includes/settings.php';
+	require_once  __DIR__ . '/includes/member-importer.php';
+	require_once  __DIR__ . '/includes/google-api.php';
+	// Register CLI.
+	if ( defined( 'WP_CLI' ) && WP_CLI ) {
+		WP_CLI::add_command( 'sfwj', 'Sfwj\SfwjWeb\Command' );
+	}
 } );
