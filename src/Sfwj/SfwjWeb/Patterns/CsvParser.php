@@ -171,4 +171,46 @@ abstract class CsvParser {
 		}
 		create_author_term( $post_id );
 	}
+
+	/**
+	 * Excelのコラム名を数値に変換する
+	 *
+	 * @param string $col Excelのコラム名。AAなど。
+	 * @return int
+	 */
+	public function column_to_index( $col ) {
+		$index  = -1;
+		$length = strlen( $col );
+		$char   = strtoupper( 'abcdefghijklmnopqrstuvwxyz' );
+		for ( $i = $length - 1; $i >= 0; $i-- ) {
+			$letter = substr( $col, $i, 1 );
+			$basis  = pow( 26, $length - $i - 1 );
+			$index += $basis * ( strpos( $char, $letter ) + 1 );
+		}
+		return $index;
+	}
+
+	/**
+	 * ISBN-10をISBN-13に変換する
+	 *
+	 * @param string $isbn10 ISBN-10
+	 *
+	 * @return string
+	 */
+	public function isbn10_to_13( $isbn10 ) {
+		$isbn12  = '978' . substr( $isbn10, 0, 9 );
+		$sum = 0;
+		for ( $i = 0; $i < 12; $i++ ) {
+			$num = (int) substr(  $isbn12, $i, 1 );
+			// 偶数番目なら3倍、奇数番目ならそのままで合算
+			$sum += ( ( $i + 1 ) % 2 === 0 ) ? $num * 3 : $num;
+		}
+		// 合算値の最後の桁を10から引いたものがチェックデジット
+		$check_digit = 10 - ( $sum % 10 );
+		if ( 10 === $check_digit ) {
+			// 10の場合は1桁目の0にする
+			$check_digit = 0;
+		}
+		return $isbn12 . $check_digit;
+	}
 }

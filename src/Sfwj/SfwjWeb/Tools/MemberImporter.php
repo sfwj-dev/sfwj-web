@@ -4,6 +4,7 @@ namespace Sfwj\SfwjWeb\Tools;
 
 
 use Sfwj\SfwjWeb\Patterns\SingletonPattern;
+use Sfwj\SfwjWeb\Tools\CsvParser\NormalMemberCsvParser;
 use Sfwj\SfwjWeb\Tools\CsvParser\SimpleMemberCsvParser;
 
 /**
@@ -57,6 +58,7 @@ class MemberImporter extends SingletonPattern {
 		$parser = null;
 		switch ( $type ) {
 			case 'normal':
+				$parser = new NormalMemberCsvParser( $file_id );
 				break;
 			case 'other':
 				$parser = new SimpleMemberCsvParser( $file_id );

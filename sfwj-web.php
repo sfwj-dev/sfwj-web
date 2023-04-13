@@ -34,6 +34,7 @@ add_action( 'plugins_loaded', function() {
 	require_once  __DIR__ . '/includes/taxonomy.php';
 	// Register hooks.
 	\Sfwj\SfwjWeb\Tools\MemberImporter::get();
+	\Sfwj\SfwjWeb\MemberWorks::get();
 	// Register CLI.
 	if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		WP_CLI::add_command( 'sfwj', 'Sfwj\SfwjWeb\Command' );
