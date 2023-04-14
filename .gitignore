@@ -7,3 +7,5 @@ package-lock.json
 Thumb.db
 *.cache
 /addons/
+/dist/
+wp-dependencies.json

@@ -16,14 +16,22 @@ class MemberWorks extends SingletonPattern {
 	 * {@inheritdoc}
 	 */
 	protected function init() {
+		// 投稿タイプを登録
 		add_action( 'init', [ $this, 'register_post' ] );
+		// メタボックスを登録
 		add_action( 'add_meta_boxes', [ $this, 'register_meta_box' ] );
+		add_action( 'save_post_' . self::POST_TYPE, [ $this, 'save_post' ], 10, 2 );
+		// タイトルのプレースホルダーを変更
 		add_filter( 'enter_title_here', function( $title, $post ) {
 			if ( self::POST_TYPE === $post->post_type ) {
 				return __( '書名を入力してください。', 'sfwj' );
 			}
 			return $title;
 		}, 10, 2 );
+		// REST APIを登録
+		add_action( 'rest_api_init', [ $this, 'register_rest_api' ] );
+		// ブロックを追加
+		add_action( 'init', [ $this, 'register_block' ] );
 	}
 
 	/**
@@ -53,10 +61,46 @@ class MemberWorks extends SingletonPattern {
 	 * @return void
 	 */
 	public function register_meta_box( $post_type ) {
+		// TODO: ブロック用JSの場所を移す
+		// ブロック用途に会員種別を読み込み
+		$member_status = [];
+		$terms = get_terms( [
+			'taxonomy'   => 'member-status',
+			'hide_empty' => false,
+		] );
+		if ( $terms && ! is_wp_error( $terms ) ) {
+			foreach ( $terms as $term ) {
+				$member_status[] = [
+					'label' => $term->name,
+					'value' => $term->slug,
+				];
+			}
+		}
+		wp_localize_script( 'sfwj-member-block', 'SfwjMemberStatus', $member_status );
 		if ( self::POST_TYPE !== $post_type ) {
 			return;
 		}
+		// メタボックスを登録
 		add_meta_box( 'member-work', __( '作品データ', 'sfwj' ), [ $this, 'render_meta_box' ], self::POST_TYPE, 'normal', 'high' );
+		// スクリプトを読み込み
+		list( $url, $hash ) = sfwj_asset_url_and_version( 'dist/js/isbn-helper.js' );
+		wp_enqueue_script( 'isbn-helper', $url, [ 'jquery', 'wp-api-fetch', 'wp-i18n' ], $hash, true );
+	}
+
+	/**
+	 * 投稿データを保存する
+	 *
+	 * @param int      $post_id 投稿ID。
+	 * @param \WP_Post $post    投稿オブジェクト。
+	 *
+	 * @return void
+	 */
+	public function save_post( $post_id, $post ) {
+		if ( ! wp_verify_nonce( filter_input( INPUT_POST, '_sfwjisbnnonce' ), 'update_isbn' ) ) {
+			return;
+		}
+		update_post_meta( $post_id, '_isbn', filter_input( INPUT_POST, '_isbn' ) );
+		update_post_meta( $post_id, '_url', filter_input( INPUT_POST, '_url' ) );
 	}
 
 	/**
@@ -67,13 +111,9 @@ class MemberWorks extends SingletonPattern {
 	 * @return void
 	 */
 	public function render_meta_box( $post ) {
+		wp_nonce_field( 'update_isbn', '_sfwjisbnnonce', false );
 		$isbn_data = get_post_meta( $post->ID, '_isbn_data', true );
-		if ( $isbn_data ) :
 		?>
-			<div>
-				<img src="<?php echo esc_url( $isbn_data['summary']['cover'] ); ?>" alt="<?php echo esc_attr( $isbn_data['summary']['title'] ); ?>" loading="lazy" style="width: auto; height: auto; max-width: 150px;" />
-			</div>
-		<?php endif; ?>
 		<p>
 			<label>
 				ISBN<br />
@@ -106,6 +146,22 @@ class MemberWorks extends SingletonPattern {
 			</span>
 			<span style="clear: both;"></span>
 		</p>
+		<?php if ( $isbn_data ) :
+			if ( ! empty( $isbn_data['summary']['cover'] ) ) :
+				?>
+					<div>
+					<img src="<?php echo esc_url( $isbn_data['summary']['cover'] ); ?>" alt="<?php echo esc_attr( $isbn_data['summary']['title'] ); ?>" loading="lazy" style="width: auto; height: auto; max-width: 150px;" />
+				</div>
+				<p class="description">
+					<?php esc_html_e( 'OpenBDと同期されています。', 'sfwj' ); ?>
+				</p>
+			<?php else : ?>
+				<p class="description">
+					<?php esc_html_e( 'OpenBDと同期されていますが、書影はありません。', 'sfwj' ); ?>
+				</p>
+			<?php endif; ?>
+			<textarea readonly rows="8" style="width: 100%; box-sizing: border-box;"><?php echo esc_textarea( json_encode( $isbn_data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT ) ); ?></textarea>
+		<?php endif; ?>
 		<?php
 	}
 
@@ -306,5 +362,225 @@ class MemberWorks extends SingletonPattern {
 			$post_args['post_status'] = 'publish';
 		}
 		return wp_update_post( $post_args, true );
+	}
+
+	/**
+	 * REST APIを登録する
+	 *
+	 * @return void
+	 */
+	public function register_rest_api() {
+		register_rest_route( 'sfwj/v1', '/isbn/(?P<id>\d+)', [
+			'methods'             => 'POST',
+			'args'                => [
+				'id' => [
+					'required'          => true,
+					'description'       => __( '投稿のIDです。', 'sfwj' ),
+					'validate_callback' => function( $param ) {
+						return is_numeric( $param ) && get_post( $param );
+					},
+				],
+				'isbn' => [
+					'required'          => true,
+					'description'       => __( '13桁のISBNです。', 'sfwj' ),
+					'validate_callback' => function( $param ) {
+						return preg_match( '/^\d{13}$/u', $param );
+					},
+				],
+			],
+			'callback'            => [ $this, 'rest_update_isbn' ],
+			'permission_callback' => function( \WP_REST_Request $request ) {
+				return current_user_can( 'edit_post', $request->get_param( 'id' ) );
+			},
+		] );
+	}
+
+	/**
+	 * 投稿をISBNの情報を元にする
+	 *
+	 *
+	 * @param \WP_REST_Request $request リクエストオブジェクト
+	 *
+	 * @return \WP_Error|\WP_REST_Response
+	 */
+	public function rest_update_isbn( $request ) {
+		$post_id = $request->get_param( 'id' );
+		$post    = get_post( $post_id );
+		if ( ! $post || self::POST_TYPE !== $post->post_type ) {
+			return new \WP_Error( 'invalid_post', __( '該当する投稿がありません。', 'sfwj' ), [
+				'status' => 400,
+			] );
+		}
+		// ISBNを保存
+		$isbn = $request->get_param( 'isbn' );
+		if ( ! preg_match( '/^\d{13}$/u', $isbn ) ) {
+			return new \WP_Error( 'invalid_post', __( 'ISBNの形式が不正です。', 'sfwj' ), [
+				'status' => 400,
+			] );
+		}
+		update_post_meta( $post_id, '_isbn', $isbn );
+		// ISBNの情報をもとに投稿を更新
+		$result = $this->fix_post_with_isbn( $post_id );
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+		return new \WP_REST_Response( [
+			'success' => true,
+			'post_id' => $post_id,
+			'message' => __( 'ISBNを元に投稿を更新しました。', 'sfwj' ),
+			'url'     => get_edit_post_link( $post_id, 'api' ),
+		] );
+	}
+
+	/**
+	 * ブロックを追加する
+	 *
+	 * @return void
+	 */
+	public function register_block() {
+		list( $js, $js_hash )   = sfwj_asset_url_and_version( 'dist/js/member-block.js' );
+		list( $css, $css_hash ) = sfwj_asset_url_and_version( 'dist/css/member-block.css' );
+		wp_register_script( 'sfwj-member-block', $js, [ 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-server-side-render' ], $js_hash, true );
+		wp_register_style( 'sfwj-member-block', $css, [], $css_hash );
+		register_block_type( 'sfwj/members', [
+			'attributes'      => [
+				'status' => [
+					'type'    => 'string',
+					'default' => '',
+				],
+				'link' => [
+					'type'    => 'boolean',
+					'default' => true,
+				],
+				'grouping' => [
+					'type'    => 'boolean',
+					'default' => true,
+				],
+			],
+			'render_callback' => [ $this, 'block_render_callback' ],
+			'editor_script'   => 'sfwj-member-block',
+			'style'           => 'sfwj-member-block',
+		] );
+	}
+
+	/**
+	 * @param $attributes
+	 * @param $content
+	 *
+	 * @return string
+	 */
+	public function block_render_callback( $attributes, $content = '' ) {
+		$attributes = wp_parse_args( $attributes, [
+			'status'   => '',
+			'link'     => true,
+			'grouping' => true,
+		] );
+		$args = [
+			'post_type'        => 'member',
+			'post_status'      => 'publish',
+			'posts_per_page'   => -1,
+			'orderby'          => [ 'meta_value' => 'ASC' ],
+			'meta_key'         => '_yomigana',
+			'suppress_filters' => false,
+		];
+		if ( $attributes['status'] ) {
+			$args['tax_query'] = [
+				[
+					'taxonomy' => 'member-status',
+					'field'    => 'slug',
+					'terms'    => $attributes['status'],
+				],
+			];
+		}
+		$posts = get_posts( $args );
+		ob_start();
+		if ( empty( $posts ) ) {
+			if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+				printf( '<p class="description">%s</p>', esc_html__( '該当する会員はいません。', 'sfwj' ) );
+			}
+		} else {
+			if ( $attributes['grouping'] ) {
+				$members = [];
+				$kana    = [
+					'あいうえお',
+					'かきくけこがぎぐけご',
+					'さしすせそさじずぜぞ',
+					'たちつてとたぢづてど',
+					'なにぬねの',
+					'はひふへほばびぶべぼぱぴぷぺぽ',
+					'まみむめも',
+					'やゆよ',
+					'らりるれろ',
+					'わをん',
+				];
+				foreach ( $posts as $post ) {
+					$yomigana = get_post_meta( $post->ID, '_yomigana', true );
+					if ( ! $yomigana ) {
+						continue;
+
+					}
+					$first_letter = mb_substr( $yomigana, 0, 1 );
+					$group = '';
+					foreach ( $kana as $kana_group ) {
+						$first_kana = mb_substr( $kana_group, 0, 1 );
+						$kana_group = $kana_group . mb_convert_kana( $kana_group, 'C' );
+						if ( false !== mb_strpos( $kana_group, $first_letter ) ) {
+							$group = $first_kana;
+							break 1;
+						}
+					}
+					if ( ! $group ) {
+						continue;
+					}
+					if ( ! isset( $members[ $group ] ) ) {
+						$members[ $group ] = [];
+					}
+					$members[ $group ][] = $post;
+				}
+			} else {
+				$members = [ '' => $posts ];
+			}
+			// 統計様のラベル
+			$stats_label = '';
+			if ( $attributes['status'] ) {
+				$term = get_term_by( 'slug', $attributes['status'], 'member-status' );
+				if ( $term && ! is_wp_error( $term ) ) {
+					$stats_label = $term->name . ': ';
+				}
+			}
+			?>
+			<div class="wp-block-sfwj-members sfwj-members">
+				<p class="sfwj-members-count"><?php printf( esc_html__( '%1$s%2$s名', 'sfwj' ), $stats_label, number_format( count( $posts ) ) ); ?></p>
+				<?php foreach ( $members as $key => $ms )  {
+					if ( $key ) {
+						printf( '<h3 class="sfwj-members-title">%s行</h3>', esc_html( $key ) );
+					}
+					if ( empty( $ms ) ) {
+						continue;
+					}
+					?>
+					<ul class="sfwj-members-list">
+						<?php foreach ( $ms as $m ) : ?>
+						<li class="sfwj-members-item">
+							<?php if ( $attributes['link'] ) : ?>
+								<a href="<?php echo get_the_permalink( $m ) ?>" class="sfwj-members-link">
+									<?php echo get_the_title( $m ); ?>
+								</a>
+							<?php else : ?>
+								<span class="sfwj-memers-name">
+									<?php echo get_the_title( $m ); ?>
+								</span>
+							<?php endif; ?>
+						</li>
+						<?php endforeach; ?>
+					</ul>
+					<?php
+				} ?>
+			</div>
+			<?php
+		}
+		$result = ob_get_contents();
+		ob_end_clean();
+		return $result;
 	}
 }
