@@ -40,7 +40,7 @@ class NormalMemberCsvParser extends CsvParser {
 		$data = [
 			'post_title'   => $row[ 3 ],
 			'post_content' => wpautop( $row[ $this->column_to_index( 'G' ) ] ),
-			'post_date'    => str_replace( '/', '-', $row[ 0 ] ),
+			'post_date'    => ! empty( $row[0] ) ? str_replace( '/', '-', $row[ 0 ] ) : current_time( 'mysql' ),
 		];
 		$slug = $this->extract_slug( $row );
 		if ( $slug ) {

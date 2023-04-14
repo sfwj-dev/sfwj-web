@@ -95,11 +95,7 @@ function sfwj_save_file( $url, $post_id = 0 ) {
 		$file_info['error']    = UPLOAD_ERR_OK;
 		$file_info['size']     = $result->getBody()->getSize();
 		// メディアライブラリに登録
-		$attachment_id = media_handle_sideload( $file_info, $post_id );
-		if ( is_wp_error( $attachment_id ) ) {
-			return $attachment_id;
-		}
-		return $attachment_id;
+		return media_handle_sideload( $file_info, $post_id );
 	} catch ( \Exception $e ) {
 		return new WP_Error( 'sfwj-google-api-error', $e->getMessage() );
 	}

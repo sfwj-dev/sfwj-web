@@ -123,4 +123,85 @@ class Command extends \WP_CLI_Command {
 		\WP_CLI::line( '' );
 		\WP_CLI::success( sprintf( '書籍画像を%d件取得しました。', $success ) );
 	}
+
+	/**
+	 * プロフィール画像を作成する
+	 *
+	 * @return void
+	 */
+	public function profile_picture() {
+		$query = new \WP_Query( [
+			'post_type'   => 'member',
+			'post_status' => 'any',
+			'meta_query'  => [
+				'relation' => 'AND',
+				[
+					'key'     => '_thumbnail_synced',
+					'compare' => 'NOT EXISTS',
+				],
+				[
+					'relation' => 'OR',
+					[
+						'key'     => '_profile_pic',
+						'compare' => '!=',
+						'value'   => '',
+					],
+					[
+						'key'     => '_thumbnail_pic',
+						'compare' => '!=',
+						'value'   => '',
+					],
+				],
+			],
+			'posts_per_page' => -1,
+		] );
+		$posts = $query->posts;
+		if ( ! $posts ) {
+			\WP_CLI::success( '修正すべき会員情報はありませんでした。' );
+		}
+		\WP_CLI::line( sprintf( '%d件の投稿を修正します。', count( $posts )) );
+		$success = 0;
+		foreach ( $posts as $post ) {
+			$profile_pic_id   = 0;
+			$thumbnail_pic_id = 0;
+			$profile_pic_url   = get_post_meta( $post->ID, '_profile_pic', true );
+			if ( $profile_pic_url ) {
+				$profile_pic_result = sfwj_save_file( $profile_pic_url, $post->ID );
+				if ( is_wp_error( $profile_pic_result ) ) {
+					\WP_CLI::warning( sprintf( '#%d %s: %s', $post->ID, $post->post_title, $profile_pic_result->get_error_message() ) );
+				} else {
+					$profile_pic_id = $profile_pic_result;
+					\WP_CLI::line( 'Profile   OK: ' . $profile_pic_url );
+				}
+			}
+			$thumbnail_pic_url = get_post_meta( $post->ID, '_thumbnail_pic', true );
+			if ( $thumbnail_pic_url ) {
+				$thumbnail_pic_result = sfwj_save_file( $thumbnail_pic_url, $post->ID );
+				if ( is_wp_error( $thumbnail_pic_result ) ) {
+					\WP_CLI::warning( sprintf( '#%d %s: %s', $post->ID, $post->post_title, $thumbnail_pic_result->get_error_message() ) );
+				} else {
+					$thumbnail_pic_id = $thumbnail_pic_result;
+					\WP_CLI::line( 'Thumbnail OK: ' . $thumbnail_pic_url );
+				}
+			}
+			if ( ! $profile_pic_id && ! $thumbnail_pic_id ) {
+				// どちらも取得できなかったので、スキップ
+				continue;
+			}
+			// 画像は少なくとも取得出来たので、同期完了とみなす。
+			update_post_meta( $post->ID, '_thumbnail_synced', current_time( 'mysql' ) );
+			// サムネイルがあれば、画像を設定
+			if ( ! $thumbnail_pic_id ) {
+				$thumbnail_pic_id = $profile_pic_id;
+			}
+			set_post_thumbnail( $post->ID, $thumbnail_pic_id );
+			// メイン画像があれば、画像を設定
+			if ( $profile_pic_id ) {
+				update_post_meta( $post->ID, '_profile_pic_id', $profile_pic_id );
+			}
+			$success++;
+		}
+		\WP_CLI::line( '' );
+		\WP_CLI::success( sprintf( 'プロフィール画像を%d件取得しました。', $success ) );
+	}
 }
