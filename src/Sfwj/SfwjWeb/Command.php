@@ -89,4 +89,38 @@ class Command extends \WP_CLI_Command {
 		\WP_CLI::line( '' );
 		\WP_CLI::success( '投稿をすべて削除しました。' );
 	}
+
+	/**
+	 * 書影をGoogle Driveから取得してアイキャッチに指定する
+	 *
+	 * @return void
+	 */
+	public function book_cover() {
+		$posts  = MemberWorks::get()->post_to_fix_covers();
+		$number = count( $posts );
+		if ( ! $number ) {
+			\WP_CLI::success( '修正対象の投稿はありません' );
+		}
+		\WP_CLI::line( sprintf( '%d件の書籍画像を取得します。', $number ) );
+		$success = 0;
+		foreach ( $posts as $post ) {
+			$url = get_post_meta( $post->ID, '_google_drive_url', true );
+			$attachment_id = sfwj_save_file( $url, $post->ID );
+			if ( is_wp_error( $attachment_id ) ) {
+				\WP_CLI::warning( sprintf( '#%d %s: %s', $post->ID, $post->post_title, $attachment_id->get_error_message() ) );
+				continue;
+			}
+			// アイキャッチ画像に指定する
+			set_post_thumbnail( $post->ID, $attachment_id );
+			// 投稿を公開にする。
+			wp_update_post( [
+				'ID'          => $post->ID,
+				'post_status' => 'publish',
+			] );
+			$success++;
+			\WP_CLI::line( 'OK: ' . $url );
+		}
+		\WP_CLI::line( '' );
+		\WP_CLI::success( sprintf( '書籍画像を%d件取得しました。', $success ) );
+	}
 }

@@ -146,8 +146,11 @@ class MemberWorks extends SingletonPattern {
 		}
 		// 同じ名前のものがあった場合は、それを使う
 		$registered = $this->get_work( $isbn );
+		$append     = false;
 		if ( $registered ) {
 			$post_id = $registered->ID;
+			// 消さないようにする
+			$append = true;
 		} else {
 			// 既存のものはないので、新規登録
 			$post_id = wp_insert_post( [
@@ -163,7 +166,7 @@ class MemberWorks extends SingletonPattern {
 			update_post_meta( $post_id, '_isbn', $isbn );
 		}
 		// 作者を保存
-		wp_set_object_terms( $post_id, $term->term_id, $term->taxonomy );
+		wp_set_object_terms( $post_id, $term->term_id, $term->taxonomy, $append );
 		return $post_id;
 	}
 
@@ -203,6 +206,29 @@ class MemberWorks extends SingletonPattern {
 			update_post_meta( $post_id, '_google_drive_url', $thumbnail );
 		}
 		return $post_id;
+	}
 
+	/**
+	 * カバー画像を修正すべき投稿を取得する
+	 *
+	 * @return \WP_Post[]
+	 */
+	public function post_to_fix_covers() {
+		$query = new \WP_Query( [
+			'post_type'   => self::POST_TYPE,
+			'post_status' => 'private',
+			'meta_query'  => [
+				[
+					'key'     => '_google_drive_url',
+					'compare' => 'EXISTS',
+				],
+				[
+					'key'     => '_google_fetched',
+					'compare' => 'NOT EXISTS',
+				],
+			],
+			'posts_per_page' => -1,
+		] );
+		return $query->posts;
 	}
 }
