@@ -2,6 +2,7 @@
 
 namespace Sfwj\SfwjWeb;
 
+use cli\Table;
 use Sfwj\SfwjWeb\Tools\CsvParser\NormalMemberCsvParser;
 
 /**
@@ -117,6 +118,8 @@ class Command extends \WP_CLI_Command {
 				'ID'          => $post->ID,
 				'post_status' => 'publish',
 			] );
+			// 更新日時を保存
+			update_post_meta( $post->ID, '_google_fetched',current_time( 'mysql' ) );
 			$success++;
 			\WP_CLI::line( 'OK: ' . $url );
 		}
@@ -203,5 +206,64 @@ class Command extends \WP_CLI_Command {
 		}
 		\WP_CLI::line( '' );
 		\WP_CLI::success( sprintf( 'プロフィール画像を%d件取得しました。', $success ) );
+	}
+
+	/**
+	 * ISBNを取得する
+	 *
+	 * @synopsis <isbn>
+	 * @param array $args Command arguments.
+	 * @return void
+	 */
+	public function isbn( $args ) {
+		list( $isbn ) = $args;
+		$result = sfwj_openbd_get( $isbn );
+		if ( is_wp_error( $result ) ) {
+			\WP_CLI::error( $result->get_error_message() );
+		}
+		$table = new Table();
+		$table->setHeaders( [ 'Field', 'Value' ] );
+		$data = [
+			'Title'     => $result['summary']['title'],
+			'Publisher' => $result['summary']['publisher'],
+			'Author'    => $result['summary']['author'],
+			'Published' => $result['summary']['pubdate'],
+			'Cover'     => $result['summary']['cover'],
+		];
+		foreach ( $data as $field => $value ) {
+			$table->addRow( [ $field, $value ] );
+		}
+		$table->display();
+	}
+
+	/**
+	 * ISBNのある書籍を更新する
+	 *
+	 * @synopsis [--dry-run]
+	 * @param array $args コマンドの引数
+	 * @param array $assoc コマンドのオプション
+	 * @return void
+	 */
+	public function complete_isbn( $args, $assoc ) {
+		$posts = MemberWorks::get()->post_to_fix_isbn();
+		if ( ! $posts ) {
+			\WP_CLI::success( '修正すべき書籍情報はありませんでした。' );
+		}
+		\WP_CLI::line( sprintf( '%d件の投稿を修正します。', count( $posts ) ) );
+		if ( $args['dry-run'] ) {
+			\WP_CLI::success( '終了' );
+		}
+		$success = 0;
+		foreach ( $posts as $post ) {
+			$result = MemberWorks::get()->fix_post_with_isbn( $post->ID, true );
+			if ( is_wp_error( $result ) ) {
+				\WP_CLI::warning( sprintf( 'Error   #%d %s: %s', $post->ID, $post->post_title, $result->get_error_message() ) );
+			} else {
+				$success++;
+				\WP_CLI::line( sprintf( 'Success #%d %s', $post->ID, $post->post_title ) );
+			}
+		}
+		\WP_CLI::line( '' );
+		\WP_CLI::success( sprintf( 'ISBNをもとに%d / %d件を取得しました。', $success, count( $posts ) ) );
 	}
 }

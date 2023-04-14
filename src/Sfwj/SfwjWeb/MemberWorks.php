@@ -42,7 +42,7 @@ class MemberWorks extends SingletonPattern {
 			'show_in_rest'      => false,
 			'show_in_nav_menus' => false,
 			'show_in_admin_bar' => false,
-			'taxonomies'        => [ 'authors' ],
+			'taxonomies'        => [ 'authors', 'publisher' ],
 		] );
 	}
 
@@ -67,7 +67,13 @@ class MemberWorks extends SingletonPattern {
 	 * @return void
 	 */
 	public function render_meta_box( $post ) {
+		$isbn_data = get_post_meta( $post->ID, '_isbn_data', true );
+		if ( $isbn_data ) :
 		?>
+			<div>
+				<img src="<?php echo esc_url( $isbn_data['summary']['cover'] ); ?>" alt="<?php echo esc_attr( $isbn_data['summary']['title'] ); ?>" loading="lazy" style="width: auto; height: auto; max-width: 150px;" />
+			</div>
+		<?php endif; ?>
 		<p>
 			<label>
 				ISBN<br />
@@ -100,7 +106,6 @@ class MemberWorks extends SingletonPattern {
 			</span>
 			<span style="clear: both;"></span>
 		</p>
-
 		<?php
 	}
 
@@ -230,5 +235,76 @@ class MemberWorks extends SingletonPattern {
 			'posts_per_page' => -1,
 		] );
 		return $query->posts;
+	}
+
+	/**
+	 * ISBNを修正すべき投稿を取得する
+	 *
+	 * @return \WP_Post[]
+	 */
+	public function post_to_fix_isbn() {
+		$query = new \WP_Query( [
+			'post_type'      => self::POST_TYPE,
+			'post_status'    => 'private',
+			'posts_per_page' => -1,
+			'meta_query'     => [
+				[
+					'key'     => '_isbn',
+					'compare' => 'EXISTS',
+				],
+				[
+					'key'     => '_last_synced',
+					'compare' => 'NOT EXISTS',
+				],
+			],
+		] );
+		return $query->posts;
+	}
+
+	/**
+	 * 投稿のデータをISBNから取得して修正する
+	 *
+	 * @param int  $post_id 書籍のID
+	 * @parma bool $publish 修正後に公開するかどうか
+	 *
+	 * @return int|\WP_Error
+	 */
+	public function fix_post_with_isbn( $post_id, $publish = false ) {
+		$post = get_post( $post_id );
+		if ( ! $post || self::POST_TYPE !== $post->post_type ) {
+			return new \WP_Error( 'invalid_post', __( '無効な投稿です。', 'sfwj' ) );
+		}
+		$isbn = (string) get_post_meta( $post_id, '_isbn', true );
+		if ( ! preg_match( '/^\d{13}$/u', $isbn ) ) {
+			return new \WP_Error( 'invalid_isbn', __( '無効なISBNです。', 'sfwj' ) );
+		}
+		// APIからデータを取得
+		$book_info = sfwj_openbd_get( $isbn );
+		if ( is_wp_error( $book_info ) ) {
+			// なかったらタイトルを変更
+			if ( $publish ) {
+				wp_update_post( [
+					'ID'         => $post_id,
+					'post_title' => $isbn . ' ' . '失敗',
+				] );
+			}
+			return $book_info;
+		}
+		// ISBNの情報を保存
+		update_post_meta( $post_id, '_isbn_data', $book_info );
+		update_post_meta( $post_id, '_last_synced', current_time( 'mysql' ) );
+		// 出版社を保存
+		if ( ! empty( $book_info['summary']['publisher'] ) ) {
+			wp_set_object_terms( $post_id, $book_info['summary']['publisher'], 'publisher' );
+		}
+		// 投稿を保存
+		$post_args = [
+			'ID'         => $post_id,
+			'post_title' => $book_info['summary']['title'],
+		];
+		if ( $publish ) {
+			$post_args['post_status'] = 'publish';
+		}
+		return wp_update_post( $post_args, true );
 	}
 }

@@ -31,6 +31,7 @@ add_action( 'plugins_loaded', function() {
 	require_once __DIR__ . '/includes/settings.php';
 	require_once  __DIR__ . '/includes/member-importer.php';
 	require_once  __DIR__ . '/includes/google-api.php';
+	require_once  __DIR__ . '/includes/openbd-api.php';
 	require_once  __DIR__ . '/includes/taxonomy.php';
 	// Register hooks.
 	\Sfwj\SfwjWeb\Tools\MemberImporter::get();
