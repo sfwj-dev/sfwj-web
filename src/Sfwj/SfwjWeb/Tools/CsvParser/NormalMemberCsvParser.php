@@ -93,10 +93,10 @@ class NormalMemberCsvParser extends CsvParser {
 				continue;
 			}
 			$maybe_isbn     = preg_replace( '/[\-ー]/u', '', trim( $title_or_index ) );
-			if ( preg_match( '/[0-9]{13}]/u', $maybe_isbn ) ) {
+			if ( preg_match( '/^[0-9]{13}$/u', $maybe_isbn ) ) {
 				// ISBN13
 				$isbn = $maybe_isbn;
-			} elseif ( preg_match( '/[0-9]{9}[0-9xX]/u', $maybe_isbn ) ) {
+			} elseif ( preg_match( '/^[0-9]{9}[0-9xX]$/u', $maybe_isbn ) ) {
 				// ISBN10
 				$isbn = $this->isbn10_to_13( $maybe_isbn );
 			} else {

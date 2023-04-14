@@ -61,6 +61,32 @@ class Command extends \WP_CLI_Command {
 	 * @return void
 	 */
 	public function cleanup() {
-
+		\WP_CLI::confirm( 'これは会員情報をすべて削除します。実行してよろしいですか？' );
+		$query = new \WP_Query( [
+			'post_type'      => 'member',
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+		] );
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			$term = get_author_term( get_the_ID() );
+			if ( $term ) {
+				wp_delete_term( $term->term_id, $term->taxonomy );
+			}
+			wp_delete_post( get_the_ID(), true );
+			echo '.';
+		}
+		$query = new \WP_Query( [
+			'post_type'      => MemberWorks::POST_TYPE,
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+		] );
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			wp_delete_post( get_the_ID(), true );
+			echo '.';
+		}
+		\WP_CLI::line( '' );
+		\WP_CLI::success( '投稿をすべて削除しました。' );
 	}
 }

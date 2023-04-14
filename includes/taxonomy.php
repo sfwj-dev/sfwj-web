@@ -42,6 +42,20 @@ function get_author_term( $post_id ) {
  * @return int|\WP_Error
  */
 function create_author_term( $post_id ) {
+	$title = get_the_title( $post_id );
+	// 既存の同名タグがあるかを確認
+	$term_query = new \WP_Term_Query( [
+		'taxonomy'   => TAXONOMY_AUTHOR,
+		'hide_empty' => false,
+		'number'     => 1,
+		'name'       => $title,
+	] );
+	foreach ( $term_query->get_terms() as $term ) {
+		// 同じ名前のタグを発見したので、メタ情報を更新する
+		add_term_meta( $term->term_id, TERM_META_AUTHOR_ID, $post_id );
+		return $term->term_id;
+	}
+	// ここまで来たということは、タグはなかった。
 	$term = wp_insert_term( get_the_title( $post_id ), TAXONOMY_AUTHOR );
 	if ( is_wp_error( $term ) ) {
 		return $term;

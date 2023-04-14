@@ -128,32 +128,40 @@ class MemberWorks extends SingletonPattern {
 	/**
 	 * ISBNで作品を登録する
 	 *
-	 * @param int    $post_id 作者の投稿ID
-	 * @param string $isbn    13桁のISBN
+	 * @param int    $author_id 作者の投稿ID
+	 * @param string $isbn      13桁のISBN
 	 *
 	 * @return int|\WP_Error
 	 */
-	public function register_work_with_isbn( $post_id, $isbn ) {
+	public function register_work_with_isbn( $author_id, $isbn ) {
 		$registered = $this->get_work( $isbn );
 		if ( $registered ) {
 			return $registered->ID;
 		}
 		// 作者のタームオブジェクトを取得
-		$term = get_author_term( $post_id );
+		$term = get_author_term( $author_id );
 		if ( ! $term ) {
-			return new \WP_Error( 'no_author', __( '作者が登録されていません。', 'sfwj' ) );
+			$message = sprintf( __( '%1$sの作者が%2$s(%3$d)が登録されていません。', 'sfwj' ), $isbn, get_the_title( $author_id ), $author_id );
+			return new \WP_Error( 'no_author', $message );
 		}
-		// 既存のものはないので、新規登録
-		$post_id = wp_insert_post( [
-			'post_type'   => self::POST_TYPE,
-			'post_status' => 'private',
-			'post_title'  => $isbn,
-		], true );
-		if ( is_wp_error( $post_id ) ) {
-			return $post_id;
+		// 同じ名前のものがあった場合は、それを使う
+		$registered = $this->get_work( $isbn );
+		if ( $registered ) {
+			$post_id = $registered->ID;
+		} else {
+			// 既存のものはないので、新規登録
+			$post_id = wp_insert_post( [
+				'post_type'   => self::POST_TYPE,
+				'post_status' => 'private',
+				'post_title'  => $isbn,
+			], true );
+			if ( is_wp_error( $post_id ) ) {
+				$message = sprintf( __( '%2$s（%1$s）を保存できませんでした: %3$d', 'sfwj' ), $isbn, get_the_title( $author_id ), $author_id );
+				return new \WP_Error( 'register_failed', $message );
+			}
+			// ISBNなどを保存
+			update_post_meta( $post_id, '_isbn', $isbn );
 		}
-		// ISBNなどを保存
-		update_post_meta( $post_id, '_isbn', $isbn );
 		// 作者を保存
 		wp_set_object_terms( $post_id, $term->term_id, $term->taxonomy );
 		return $post_id;
@@ -162,26 +170,28 @@ class MemberWorks extends SingletonPattern {
 	/**
 	 * 作品を登録する
 	 *
-	 * @param int    $post_id   作品の投稿ID
+	 * @param int    $author_id 作品の投稿ID
 	 * @param string $title 　　 タイトル
 	 * @param string $url 　　　　URL
 	 * @param string $thumbnail Google Driveにあるサムネイル画像のURL
 	 * @return int|\WP_Error
 	 */
-	public function register_work( $post_id, $title, $url = '', $thumbnail = '' ) {
+	public function register_work( $author_id, $title, $url = '', $thumbnail = '' ) {
 		// 作者のタームオブジェクトを取得
-		$term = get_author_term( $post_id );
+		$term = get_author_term( $author_id );
 		if ( ! $term ) {
-			return new \WP_Error( 'no_author', __( '作者が登録されていません。', 'sfwj' ) );
+			$message = sprintf( __( '%1$sの作者が%2$s(%3$d)が登録されていません。', 'sfwj' ), $title, get_the_title( $author_id ), $author_id );
+			return new \WP_Error( 'no_author', $message );
 		}
-		// 既存のものはないので、新規登録
+		// 新規登録
 		$post_id = wp_insert_post( [
 			'post_title'  => $title,
 			'post_type'   => self::POST_TYPE,
 			'post_status' => 'private',
 		], true );
 		if ( is_wp_error( $post_id ) ) {
-			return $post_id;
+			$message = sprintf( __( '%2$s『%1$s』を保存できませんでした: %3$d', 'sfwj' ), $title, get_the_title( $author_id ), $author_id );
+			return new \WP_Error( 'register_failed', $message );
 		}
 		// 作者を保存
 		wp_set_object_terms( $post_id, $term->term_id, $term->taxonomy );

@@ -52,7 +52,9 @@ abstract class CsvParser {
 			}
 			$result = $this->parse_row( $row );
 			if ( is_wp_error( $result ) ) {
-				$errors->add( $result->get_error_code(), $result->get_error_message() );
+				foreach ( $result->get_error_messages() as $message ) {
+					$errors->add( 'csv_import_error', $message );
+				}
 			} else {
 				$success++;
 			}
