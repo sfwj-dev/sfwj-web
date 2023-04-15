@@ -1,0 +1,19 @@
+/**
+ * SFWJのカスタムスタイル
+ *
+ * @handle sfwj-custom
+ */
+
+.entry-body {
+
+	p {
+		line-height: 2;
+	}
+
+	p:not([class]) {
+		text-align: justify;
+		text-justify: inter-ideograph;
+	}
+}
+
+@import "custom/*";

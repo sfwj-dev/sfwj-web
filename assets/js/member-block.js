@@ -1,7 +1,10 @@
 /*!
- * Post list block.
+ * SFWJの会員一覧ブロック
  *
+ * @handle sfwj-member-block
+ * @deps wp-blocks, wp-i18n, wp-components, wp-block-editor, wp-server-side-render
  */
+
 
 /* global SfwjMemberStatus:false */
 

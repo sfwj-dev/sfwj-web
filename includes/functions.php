@@ -36,3 +36,13 @@ function sfwj_asset_url_and_version( $rel_path ) {
 	$path = trailingslashit( sfwj_base_dir() ) . $rel_path;
 	return [ $url, filemtime( $path ) ];
 }
+
+/**
+ * リンクを自動的にリンクに変換する。
+ *
+ * @param string $string URLを含む文字列
+ * @return string
+ */
+function sfwj_linkify( $string ) {
+	return preg_replace( '@(https?://[a-zA-Z0-9.\-_?#%+/]+)@u', '<a href="$1">$1</a>', $string );
+}

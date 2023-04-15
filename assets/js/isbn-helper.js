@@ -1,6 +1,7 @@
 /*!
  * ISBNから書籍情報を入力できるようにする。
  *
+ * @handle sfwj-isbn-helper
  * @deps wp-api-fetch, wp-i18n, jquery
  */
 

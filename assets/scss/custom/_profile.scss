@@ -1,0 +1,33 @@
+.sfwj-profile {
+
+	&-picture {
+		max-width: 50%;
+		margin: 0 0 1em 1em;
+		float: right;
+
+		@media screen and ( max-width: 400px ) {
+			float: none;
+			max-width: 100%;
+			margin-right: auto;
+			margin-left: auto;
+		}
+	}
+
+	&-img {
+		width: auto;
+		height: auto;
+		max-width: 100%;
+	}
+
+	&-name-en {
+		display: block;
+		font-size: 0.6em;
+		color: #999;
+	}
+}
+
+.sfwj-bio {
+	p:not([class]) {
+		text-align: left;
+	}
+}

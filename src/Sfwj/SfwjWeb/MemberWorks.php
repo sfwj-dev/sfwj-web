@@ -83,8 +83,7 @@ class MemberWorks extends SingletonPattern {
 		// メタボックスを登録
 		add_meta_box( 'member-work', __( '作品データ', 'sfwj' ), [ $this, 'render_meta_box' ], self::POST_TYPE, 'normal', 'high' );
 		// スクリプトを読み込み
-		list( $url, $hash ) = sfwj_asset_url_and_version( 'dist/js/isbn-helper.js' );
-		wp_enqueue_script( 'isbn-helper', $url, [ 'jquery', 'wp-api-fetch', 'wp-i18n' ], $hash, true );
+		wp_enqueue_script( 'sfwj-isbn-helper' );
 	}
 
 	/**
@@ -438,10 +437,6 @@ class MemberWorks extends SingletonPattern {
 	 * @return void
 	 */
 	public function register_block() {
-		list( $js, $js_hash )   = sfwj_asset_url_and_version( 'dist/js/member-block.js' );
-		list( $css, $css_hash ) = sfwj_asset_url_and_version( 'dist/css/member-block.css' );
-		wp_register_script( 'sfwj-member-block', $js, [ 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-server-side-render' ], $js_hash, true );
-		wp_register_style( 'sfwj-member-block', $css, [], $css_hash );
 		register_block_type( 'sfwj/members', [
 			'attributes'      => [
 				'status' => [
