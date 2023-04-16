@@ -1,38 +1,41 @@
 {
-    "name": "sfwj-admin/sfwj-web",
-    "description": "A WordPress plugin for SFWJ",
+    "name": "sfwj/sfwj-web",
+    "description": "A WordPress plugin for swfj.org",
     "type": "wordpress-plugin",
-    "license": "GPL-3.0-or-later",
+    "license": "GPL_3.0-or-later",
     "authors": [
         {
-            "name": "sfwj-admin",
-            "email": "admin@sfwj.jp"
+            "name": "SFWJ",
+            "email": "admin@sfwj.org"
         }
     ],
     "minimum-stability": "stable",
-    "scripts": {
-		"setup": [
-			"mkdir wp",
-			"wp core download --path=wp"
-		],
-        "test": "phpunit",
-		"lint": [
-			"phpcs --config-set installed_paths $(pwd)/vendor/wp-coding-standards/wpcs",
-			"phpcs --standard=phpcs.ruleset.xml $(find ./ -name '*.php')"
-		],
-		"fix": [
-			"phpcs --config-set installed_paths $(pwd)/vendor/wp-coding-standards/wpcs",
-			"phpcbf --standard=phpcs.ruleset.xml $(find ./ -name '*.php')"
-		]
-    },
     "require": {
-        "php": ">=7.4"
+		"ext-mbstring": "*",
+        "google/apiclient": "^2.12.1"
     },
-    "require-dev": {
-        "phpunit/phpunit": ">=6",
+	"require-dev": {
+		"phpunit/phpunit": ">=6.0",
 		"squizlabs/php_codesniffer": "^3.0",
 		"wp-coding-standards/wpcs": "^2.0",
-        "yoast/phpunit-polyfills": "^1.0",
-        "wp-cli/wp-cli-bundle": "^2.7"
-	}
+		"yoast/phpunit-polyfills": "^1.0",
+		"phpcompatibility/php-compatibility": "^9.3",
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+
+	},
+	"scripts": {
+		"test": "phpunit",
+		"lint": "phpcs --standard=phpcs.ruleset.xml src/ includes/ sfwj-web.php",
+		"fix": "phpcbf --standard=phpcs.ruleset.xml src/ includes/ sfwj-web.php"
+	},
+	"autoload": {
+		"psr-0": {
+			"Sfwj\\SfwjWeb": "src/"
+		}
+	},
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
 }

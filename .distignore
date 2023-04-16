@@ -9,12 +9,14 @@
 .stylelintrc.json
 .wordpress_org
 .wp-env.json
+addons
 node_modules
 composer.lock
 package-lock.json
 phpcs.ruleset.xml
 phpunit.xml.dist
 webpack.config.js
+README.md
 wp
 bin
 tests
