@@ -67,12 +67,12 @@
 		&:active {
 			color: currentColor;
 			text-decoration: none;
-			opacity: .8;
+			opacity: 0.8;
 		}
 	}
 
 	&-title {
-		font-weight: 700;
+		font-weight: bold;
 		margin: 10px 0 5px;
 		display: block;
 	}

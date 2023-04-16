@@ -11,7 +11,7 @@
 const { registerBlockType } = wp.blocks;
 const { __ } = wp.i18n;
 const { InspectorControls } = wp.blockEditor;
-const { PanelBody, SelectControl, TextControl, RadioControl, ToggleControl } = wp.components;
+const { PanelBody, SelectControl, ToggleControl } = wp.components;
 const { serverSideRender: ServerSideRender } = wp;
 
 registerBlockType( 'sfwj/members', {
