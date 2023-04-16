@@ -11,6 +11,10 @@ echo "Building Plugin v${VERSION}..."
 # Install composer.
 composer install --no-dev --prefer-dist
 
+# Run npm
+npm install
+npm run build
+
 # Create README.txt
 curl -L https://raw.githubusercontent.com/fumikito/wp-readme/master/wp-readme.php | php
 

@@ -15,6 +15,7 @@ $( document ).ready( function() {
 		e.preventDefault();
 		const isbn = $( 'input[name="_isbn"]' ).val();
 		const id = $( this ).data( 'book-id' );
+		// translators: %s is ISBN.
 		const msg = sprintf( __( 'ISBN: %s の情報を元に投稿を更新します。この画面で保存していない内容は破棄されますが、よろしいですか？', 'sfwj' ), isbn );
 		if ( window.confirm( msg ) ) {
 			apiFetch( {

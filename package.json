@@ -14,7 +14,8 @@
 		"cli": "wp-env run cli wp",
 		"cli:test": "wp-env run tests-cli wp",
 		"gulp": "gulp",
-		"gulp:task": "gulp --task",
+		"gulp:task": "gulp --tasks",
+		"build": "gulp build",
 		"lint": "gulp lint",
 		"watch": "gulp watch"
 	},
