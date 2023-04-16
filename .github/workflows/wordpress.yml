@@ -100,7 +100,7 @@ jobs:
           node-version: '14'
 
       - name: Clean Package.
-        run: bash bin/build.sh
+        run: bash bin/build.sh ${{ github.ref }}
 
       - name: Clean Unwanted files
         run: bash bin/clean.sh
