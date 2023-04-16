@@ -39,7 +39,7 @@ abstract class CsvParser {
 			return new \WP_Error( 'invalid_csv', __( 'CSVが見つかりません。', 'sfwj' ) );
 		}
 		// CSVを読み込み
-		$errors = new \WP_Error();
+		$errors   = new \WP_Error();
 		$file_obj = new \SplFileObject( $csv_path );
 		$file_obj->setFlags( \SplFileObject::READ_CSV );
 		$line_no = 0;
@@ -200,10 +200,10 @@ abstract class CsvParser {
 	 * @return string
 	 */
 	public function isbn10_to_13( $isbn10 ) {
-		$isbn12  = '978' . substr( $isbn10, 0, 9 );
-		$sum = 0;
+		$isbn12 = '978' . substr( $isbn10, 0, 9 );
+		$sum    = 0;
 		for ( $i = 0; $i < 12; $i++ ) {
-			$num = (int) substr(  $isbn12, $i, 1 );
+			$num = (int) substr( $isbn12, $i, 1 );
 			// 偶数番目なら3倍、奇数番目ならそのままで合算
 			$sum += ( ( $i + 1 ) % 2 === 0 ) ? $num * 3 : $num;
 		}

@@ -56,17 +56,17 @@ add_action( 'init', function () {
 		return;
 	}
 	foreach ( $dependencies as $dependency ) {
-		if ( empty( $dependency[ 'handle' ] ) ) {
+		if ( empty( $dependency['handle'] ) ) {
 			continue;
 		}
-		$handle = $dependency[ 'handle' ];
-		$src    = plugin_dir_url( __FILE__ ) . $dependency[ 'path' ];
+		$handle = $dependency['handle'];
+		$src    = plugin_dir_url( __FILE__ ) . $dependency['path'];
 		switch ( $dependency['ext'] ) {
 			case 'js':
-				wp_register_script( $handle, $src, $dependency[ 'deps' ], $dependency[ 'hash' ], $dependency[ 'footer' ] );
+				wp_register_script( $handle, $src, $dependency['deps'], $dependency['hash'], $dependency['footer'] );
 				break;
 			case 'css':
-				wp_register_style( $handle, $src, $dependency[ 'deps' ], $dependency[ 'hash' ], $dependency[ 'media' ] );
+				wp_register_style( $handle, $src, $dependency['deps'], $dependency['hash'], $dependency['media'] );
 				break;
 
 		}

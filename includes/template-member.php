@@ -64,7 +64,7 @@ function get_authors_works( $post = null ) {
 				'terms'    => $term->term_id,
 			],
 		],
-		'orderby' => [
+		'orderby'        => [
 			'menu_order' => 'DESC',
 			'date'       => 'DESC',
 		],
@@ -91,7 +91,7 @@ function get_authors_works( $post = null ) {
 		return $post_title;
 	}
 	$post_title = sprintf( '<ruby>%s<rp>（</rp><rt>%s</rt><rp>）</rp></ruby>', $post_title, $yomigana );
-	$name_en = get_post_meta( $post_id, 'name_en', true );
+	$name_en    = get_post_meta( $post_id, 'name_en', true );
 	if ( $name_en ) {
 		$post_title .= sprintf( '<small class="sfwj-profile-name-en">%s</small>', esc_html( $name_en ) );
 	}
@@ -110,10 +110,12 @@ function get_authors_works( $post = null ) {
 	if ( $thumbnail_id ) {
 		?>
 		<figure class="sfwj-profile-picture">
-			<?php echo wp_get_attachment_image( $thumbnail_id, 'large', false, [
+			<?php
+			echo wp_get_attachment_image( $thumbnail_id, 'large', false, [
 				'class' => 'sfwj-profile-img',
 				'alt'   => get_the_title(),
-			] ); ?>
+			] );
+			?>
 		</figure>
 		<?php
 	}
@@ -167,7 +169,8 @@ function get_authors_works( $post = null ) {
 		?>
 		<h2><?php esc_html_e( '代表作', 'sfwj' ); ?></h2>
 		<ul class="sfwj-member-work-list">
-			<?php foreach ( $works as $work ) :
+			<?php
+			foreach ( $works as $work ) :
 				$url   = MemberWorks::get_link( $work );
 				$image = MemberWorks::get_cover( $work );
 				?>
@@ -176,11 +179,13 @@ function get_authors_works( $post = null ) {
 					ob_start();
 					?>
 					<a class="sfwj-member-work-link" href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer">
-						<?php if ( $image ) {
+						<?php
+						if ( $image ) {
 							echo sprintf( '<span class="sfwj-member-work-cover-frame">%s</span>', $image );
 						} else {
 							echo '<span class="sfwj-member-work-noimage"></span>';
-						}?>
+						}
+						?>
 						<span class="sfwj-member-work-title">
 							<?php echo esc_html( get_the_title( $work ) ); ?>
 						</span>
@@ -189,9 +194,11 @@ function get_authors_works( $post = null ) {
 						if ( $publishers && ! is_wp_error( $publishers ) ) :
 							?>
 							<span class="sfwj-member-work-publisher">
-								<?php echo esc_html( implode( ', ', array_map( function( $publisher ) {
+								<?php
+								echo esc_html( implode( ', ', array_map( function( $publisher ) {
 									return $publisher->name;
-								}, $publishers ) ) ); ?>
+								}, $publishers ) ) );
+								?>
 							</span>
 						<?php endif; ?>
 					</a>

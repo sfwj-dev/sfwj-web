@@ -32,8 +32,8 @@ function sfwj_base_url() {
  */
 function sfwj_asset_url_and_version( $rel_path ) {
 	$rel_path = ltrim( $rel_path, '/' );
-	$url  = trailingslashit( sfwj_base_url() ) . $rel_path;
-	$path = trailingslashit( sfwj_base_dir() ) . $rel_path;
+	$url      = trailingslashit( sfwj_base_url() ) . $rel_path;
+	$path     = trailingslashit( sfwj_base_dir() ) . $rel_path;
 	return [ $url, filemtime( $path ) ];
 }
 

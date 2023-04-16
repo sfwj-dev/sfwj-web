@@ -38,13 +38,13 @@ class NormalMemberCsvParser extends CsvParser {
 	 */
 	protected function post_data( $row ) {
 		$data = [
-			'post_title'   => $row[ 3 ],
+			'post_title'   => $row[3],
 			'post_content' => wpautop( $row[ $this->column_to_index( 'G' ) ] ),
-			'post_date'    => ! empty( $row[0] ) ? str_replace( '/', '-', $row[ 0 ] ) : current_time( 'mysql' ),
+			'post_date'    => ! empty( $row[0] ) ? str_replace( '/', '-', $row[0] ) : current_time( 'mysql' ),
 		];
 		$slug = $this->extract_slug( $row );
 		if ( $slug ) {
-			$data[ 'post_name' ] = $slug;
+			$data['post_name'] = $slug;
 		}
 
 		return $data;
@@ -92,7 +92,7 @@ class NormalMemberCsvParser extends CsvParser {
 				// タイトルが空の場合はスキップ。
 				continue;
 			}
-			$maybe_isbn     = preg_replace( '/[\-ー]/u', '', trim( $title_or_index ) );
+			$maybe_isbn = preg_replace( '/[\-ー]/u', '', trim( $title_or_index ) );
 			if ( preg_match( '/^[0-9]{13}$/u', $maybe_isbn ) ) {
 				// ISBN13
 				$isbn = $maybe_isbn;

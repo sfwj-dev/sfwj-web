@@ -64,7 +64,7 @@ class MemberWorks extends SingletonPattern {
 		// TODO: ブロック用JSの場所を移す
 		// ブロック用途に会員種別を読み込み
 		$member_status = [];
-		$terms = get_terms( [
+		$terms         = get_terms( [
 			'taxonomy'   => 'member-status',
 			'hide_empty' => false,
 		] );
@@ -133,7 +133,7 @@ class MemberWorks extends SingletonPattern {
 		<p style="padding-bottom: 10px;">
 			<button class="button" style="float: right;" data-book-id="<?php echo esc_attr( $post->ID ); ?>"><?php esc_html_e( 'openBDからデータを取得する', 'sfwj' ); ?></button>
 			<span>
-				<?php esc_html_e( '最終同期日：', 'sfwj' ) ?>
+				<?php esc_html_e( '最終同期日：', 'sfwj' ); ?>
 				<?php
 				$last_synced = get_post_meta( $post->ID, '_last_synced', true );
 				if ( $last_synced ) {
@@ -145,7 +145,8 @@ class MemberWorks extends SingletonPattern {
 			</span>
 			<span style="clear: both;"></span>
 		</p>
-		<?php if ( $isbn_data ) :
+		<?php
+		if ( $isbn_data ) :
 			if ( ! empty( $isbn_data['summary']['cover'] ) ) :
 				?>
 					<div>
@@ -159,7 +160,7 @@ class MemberWorks extends SingletonPattern {
 					<?php esc_html_e( 'OpenBDと同期されていますが、書影はありません。', 'sfwj' ); ?>
 				</p>
 			<?php endif; ?>
-			<textarea readonly rows="8" style="width: 100%; box-sizing: border-box;"><?php echo esc_textarea( json_encode( $isbn_data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT ) ); ?></textarea>
+			<textarea readonly rows="8" style="width: 100%; box-sizing: border-box;"><?php echo esc_textarea( json_encode( $isbn_data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT ) ); ?></textarea>
 		<?php endif; ?>
 		<?php
 	}
@@ -275,9 +276,9 @@ class MemberWorks extends SingletonPattern {
 	 */
 	public function post_to_fix_covers() {
 		$query = new \WP_Query( [
-			'post_type'   => self::POST_TYPE,
-			'post_status' => 'private',
-			'meta_query'  => [
+			'post_type'      => self::POST_TYPE,
+			'post_status'    => 'private',
+			'meta_query'     => [
 				[
 					'key'     => '_google_drive_url',
 					'compare' => 'EXISTS',
@@ -372,7 +373,7 @@ class MemberWorks extends SingletonPattern {
 		register_rest_route( 'sfwj/v1', '/isbn/(?P<id>\d+)', [
 			'methods'             => 'POST',
 			'args'                => [
-				'id' => [
+				'id'   => [
 					'required'          => true,
 					'description'       => __( '投稿のIDです。', 'sfwj' ),
 					'validate_callback' => function( $param ) {
@@ -439,11 +440,11 @@ class MemberWorks extends SingletonPattern {
 	public function register_block() {
 		register_block_type( 'sfwj/members', [
 			'attributes'      => [
-				'status' => [
+				'status'   => [
 					'type'    => 'string',
 					'default' => '',
 				],
-				'link' => [
+				'link'     => [
 					'type'    => 'boolean',
 					'default' => true,
 				],
@@ -472,7 +473,7 @@ class MemberWorks extends SingletonPattern {
 			'link'     => true,
 			'grouping' => true,
 		] );
-		$args = [
+		$args       = [
 			'post_type'        => 'member',
 			'post_status'      => 'publish',
 			'posts_per_page'   => -1,
@@ -517,7 +518,7 @@ class MemberWorks extends SingletonPattern {
 
 					}
 					$first_letter = mb_substr( $yomigana, 0, 1 );
-					$group = '';
+					$group        = '';
 					foreach ( $kana as $kana_group ) {
 						$first_kana = mb_substr( $kana_group, 0, 1 );
 						$kana_group = $kana_group . mb_convert_kana( $kana_group, 'C' );
@@ -548,7 +549,8 @@ class MemberWorks extends SingletonPattern {
 			?>
 			<div class="wp-block-sfwj-members sfwj-members">
 				<p class="sfwj-members-count"><?php printf( esc_html__( '%1$s%2$s名', 'sfwj' ), $stats_label, number_format( count( $posts ) ) ); ?></p>
-				<?php foreach ( $members as $key => $ms )  {
+				<?php
+				foreach ( $members as $key => $ms ) {
 					if ( $key ) {
 						printf( '<h3 class="sfwj-members-title">%s行</h3>', esc_html( $key ) );
 					}
@@ -560,7 +562,7 @@ class MemberWorks extends SingletonPattern {
 						<?php foreach ( $ms as $m ) : ?>
 						<li class="sfwj-members-item">
 							<?php if ( $attributes['link'] ) : ?>
-								<a href="<?php echo get_the_permalink( $m ) ?>" class="sfwj-members-link">
+								<a href="<?php echo get_the_permalink( $m ); ?>" class="sfwj-members-link">
 									<?php echo get_the_title( $m ); ?>
 								</a>
 							<?php else : ?>
@@ -572,7 +574,8 @@ class MemberWorks extends SingletonPattern {
 						<?php endforeach; ?>
 					</ul>
 					<?php
-				} ?>
+				}
+				?>
 			</div>
 			<?php
 		}
@@ -585,7 +588,7 @@ class MemberWorks extends SingletonPattern {
 	 * 作品の表紙画像を返す
 	 *
 	 * @param null|int|\WP_Post $post 投稿オブジェクト
- 	 * @param string $class_name クラス名
+	 * @param string $class_name クラス名
 	 * @return string
 	 */
 	public static function get_cover( $post = null, $class_name = 'sfwj-member-work-cover' ) {
@@ -597,7 +600,7 @@ class MemberWorks extends SingletonPattern {
 		if ( $thumbnail_id ) {
 			// アイキャッチが設定されているのでそのまま返す
 			return wp_get_attachment_image( $thumbnail_id, 'large', false, [
-				'class' => $class_name
+				'class' => $class_name,
 			] );
 		}
 		// アイキャッチがない場合は、openBDの情報をもとに返す

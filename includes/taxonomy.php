@@ -8,7 +8,7 @@
 namespace Sfwj\SfwjWeb;
 
 
-const TAXONOMY_AUTHOR = 'authors';
+const TAXONOMY_AUTHOR     = 'authors';
 const TERM_META_AUTHOR_ID = 'member_id';
 
 /**
@@ -87,7 +87,7 @@ function get_available_authors() {
  * @return \WP_Term|null
  */
 function member_status( $post = null ) {
-	$post = get_post( $post );
+	$post  = get_post( $post );
 	$terms = get_the_terms( $post, 'member-status' );
 	if ( ! $terms || is_wp_error( $terms ) ) {
 		return null;
@@ -109,7 +109,7 @@ function member_status( $post = null ) {
 			<select name="member_id" id="sfwj-post-author">
 				<option value="" <?php selected( $id, '' ); ?>><?php esc_html_e( '該当会員なし', 'sfwj' ); ?></option>
 				<?php foreach ( get_available_authors() as $author ) : ?>
-					<option value="<?php echo esc_attr( $author->ID ) ?>" <?php selected( $id, $author->ID ); ?>>
+					<option value="<?php echo esc_attr( $author->ID ); ?>" <?php selected( $id, $author->ID ); ?>>
 						<?php
 						echo get_the_title( $author );
 						$status = member_status( $author );

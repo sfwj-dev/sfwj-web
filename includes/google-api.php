@@ -40,7 +40,7 @@ function sfwj_google_client() {
 			'https://www.googleapis.com/auth/drive.readonly',
 		] );
 		$service = new Google\Service\Drive( $ga );
-		$client = $service;
+		$client  = $service;
 		return $service;
 	} catch ( \Exception $e ) {
 		return new WP_Error( 'sfwj-google-api-error', $e->getMessage() );
@@ -54,7 +54,7 @@ function sfwj_google_client() {
  * @return string
  */
 function sfwj_get_file_id_of_drive( $url ) {
-	$query = parse_url($url, PHP_URL_QUERY);
+	$query = parse_url( $url, PHP_URL_QUERY );
 	parse_str( $query, $params );
 	return $params['id'] ?? '';
 }
@@ -87,7 +87,7 @@ function sfwj_save_file( $url, $post_id = 0 ) {
 		$result = $client->files->get( $id, [
 			'alt' => 'media',
 		] );
-		$tmp = tempnam( sys_get_temp_dir(), 'sfwj-thumbnail' );
+		$tmp    = tempnam( sys_get_temp_dir(), 'sfwj-thumbnail' );
 		if ( ! file_put_contents( $tmp, $result->getBody()->getContents() ) ) {
 			throw new Exception( __( 'ファイルの保存に失敗しました。ディレクトリの書き込み権限がありません。', 'sfwj' ) );
 		}

@@ -86,15 +86,15 @@ class MemberImporter extends SingletonPattern {
 	public function render() {
 		$messages = [];
 		if ( isset( $_GET['success'] ) ) {
-			$messages []= sprintf( __( '%d件の会員データをインポートしました。', 'sfwj' ), filter_input( INPUT_GET, 'success' ) );
+			$messages [] = sprintf( __( '%d件の会員データをインポートしました。', 'sfwj' ), filter_input( INPUT_GET, 'success' ) );
 		}
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( '会員インポート', 'sfwj' ) ?></h1>
+			<h1><?php esc_html_e( '会員インポート', 'sfwj' ); ?></h1>
 			<?php if ( ! empty( $messages ) ) : ?>
 				<div class="notice notice-success is-dismissible">
 					<?php foreach ( $messages as $message ) : ?>
-						<p><?php echo esc_html( $message ) ?></p>
+						<p><?php echo esc_html( $message ); ?></p>
 					<?php endforeach; ?>
 				</div>
 			<?php endif; ?>
@@ -104,7 +104,7 @@ class MemberImporter extends SingletonPattern {
 					<tr>
 						<th scope="row">
 							<label for="sfwj-csv">
-								<?php esc_html_e( 'CSVファイル', 'sfwj' ) ?>
+								<?php esc_html_e( 'CSVファイル', 'sfwj' ); ?>
 							</label>
 						</th>
 						<td>
@@ -112,8 +112,8 @@ class MemberImporter extends SingletonPattern {
 							$csvs = $this->get_csv();
 							if ( empty( $csvs ) ) :
 								?>
-								<p style="color: red"><?php esc_html_e( '', 'sfwj' ) ?></p>
-							<?php else: ?>
+								<p style="color: red"><?php esc_html_e( 'CSVファイルが登録されていません。', 'sfwj' ); ?></p>
+							<?php else : ?>
 								<select name="csv" id="sfwj-csv" style="max-width: 100%; box-sizing: border-box;">
 									<option value="0" selected><?php esc_html_e( 'ファイルを選択してください。', 'sfwj' ); ?></option>
 									<?php foreach ( $csvs as $csv ) : ?>
@@ -137,7 +137,7 @@ class MemberImporter extends SingletonPattern {
 					<tr>
 						<th scope="row">
 							<label for="sfwj-member-type">
-								<?php esc_html_e( '種別', 'sfwj' ) ?>
+								<?php esc_html_e( '種別', 'sfwj' ); ?>
 							</label>
 						</th>
 						<td>
