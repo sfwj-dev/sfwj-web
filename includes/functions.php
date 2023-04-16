@@ -41,8 +41,10 @@ function sfwj_asset_url_and_version( $rel_path ) {
  * リンクを自動的にリンクに変換する。
  *
  * @param string $string URLを含む文字列
+ * @param bool $external 外部リンクにするかどうか
  * @return string
  */
-function sfwj_linkify( $string ) {
-	return preg_replace( '@(https?://[a-zA-Z0-9.\-_?#%+/]+)@u', '<a href="$1">$1</a>', $string );
+function sfwj_linkify( $string, $external = true ) {
+	$link = preg_replace( '@(https?://[a-zA-Z0-9.\-_?#%+/~]+)@u', '<a href="$1"%s>$1</a>', $string );
+	return sprintf( $link, $external ? ' target="_blank" rel="noopener noreferrer"' : '' );
 }

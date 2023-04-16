@@ -1,0 +1,84 @@
+.sfwj-member-work {
+
+	&-list {
+		margin: 20px 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 20px 20px;
+
+		@media screen and ( max-width: 500px ) {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	&-item {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&-cover {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		object-fit: cover;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+
+		&-frame {
+			position: relative;
+			display: block;
+
+			&::before {
+				content: "";
+				display: block;
+				padding-top: 150%;
+			}
+		}
+	}
+
+	&-noimage {
+		display: block;
+		width: 100%;
+		background-color: #f9f9f9;
+
+		&::before {
+			content: "";
+			display: block;
+			padding-top: 150%;
+		}
+	}
+
+	&-link {
+		display: block;
+		font-size: 0.85em;
+
+		&:link,
+		&:visited {
+			color: currentColor;
+			text-decoration: none;
+		}
+
+		&:hover,
+		&:active {
+			color: currentColor;
+			text-decoration: none;
+			opacity: .8;
+		}
+	}
+
+	&-title {
+		font-weight: 700;
+		margin: 10px 0 5px;
+		display: block;
+	}
+
+	&-publisher {
+		font-size: 0.9em;
+		display: block;
+	}
+}

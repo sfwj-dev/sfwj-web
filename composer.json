@@ -11,6 +11,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
+		"ext-mbstring": "*",
         "google/apiclient": "^2.12.1"
     },
 	"require-dev": {

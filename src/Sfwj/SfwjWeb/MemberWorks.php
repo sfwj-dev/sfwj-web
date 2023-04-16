@@ -459,8 +459,10 @@ class MemberWorks extends SingletonPattern {
 	}
 
 	/**
-	 * @param $attributes
-	 * @param $content
+	 * 会員一覧ブロックを追加する
+	 *
+	 * @param array  $attributes ブロックの属性
+	 * @param string $content    ブロックの内容
 	 *
 	 * @return string
 	 */
@@ -577,5 +579,59 @@ class MemberWorks extends SingletonPattern {
 		$result = ob_get_contents();
 		ob_end_clean();
 		return $result;
+	}
+
+	/**
+	 * 作品の表紙画像を返す
+	 *
+	 * @param null|int|\WP_Post $post 投稿オブジェクト
+ 	 * @param string $class_name クラス名
+	 * @return string
+	 */
+	public static function get_cover( $post = null, $class_name = 'sfwj-member-work-cover' ) {
+		$post = get_post( $post );
+		if ( ! $post || self::POST_TYPE !== $post->post_type ) {
+			return '';
+		}
+		$thumbnail_id = get_post_thumbnail_id( $post );
+		if ( $thumbnail_id ) {
+			// アイキャッチが設定されているのでそのまま返す
+			return wp_get_attachment_image( $thumbnail_id, 'large', false, [
+				'class' => $class_name
+			] );
+		}
+		// アイキャッチがない場合は、openBDの情報をもとに返す
+		$isbn = get_post_meta( $post->ID, '_isbn_data', true );
+		if ( ! empty( $isbn['summary']['cover'] ) ) {
+			return sprintf( '<img class="%s" alt="%s" src="%s" />', esc_attr( $class_name ), esc_attr( get_the_title( $post ) ), esc_url( $isbn['summary']['cover'] ) );
+		}
+		return '';
+	}
+
+	/**
+	 * 作品のリンクを返す
+	 *
+	 * @param null|int|\WP_Post $post 投稿オブジェクト
+	 * @return string
+	 */
+	public static function get_link( $post = null ) {
+		$post = get_post( $post );
+		if ( ! $post || self::POST_TYPE !== $post->post_type ) {
+			return '';
+		}
+		// 投稿メタに保存されたものを取得
+		$url = get_post_meta( $post->ID, '_url', true );
+		if ( $url ) {
+			return $url;
+		}
+		// openBDの情報をもとに返す
+		$isbn = get_post_meta( $post->ID, '_isbn_data', true );
+		if ( $isbn ) {
+			// JSONがあるということは版元.comの情報があるのでそちらを優先
+			return sprintf( 'https://www.hanmoto.com/bd/isbn/%d', $isbn['summary']['isbn'] );
+		}
+		// ない場合はシャープ
+		return '#';
+
 	}
 }

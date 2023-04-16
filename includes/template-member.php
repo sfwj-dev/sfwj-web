@@ -6,6 +6,8 @@
 
 namespace Sfwj\SfwjWeb;
 
+use Google\Service\YouTube\Member;
+
 /**
  * 専用のCSSを読み込む
  */
@@ -34,6 +36,40 @@ function get_profile_picture( $post = null ) {
 		return get_post_thumbnail_id( $post );
 	}
 	return 0;
+}
+
+/**
+ * 作者の代表作を一覧で取得
+ *
+ * @param null|int|\WP_Post $post 投稿
+ * @return \WP_Post[]
+ */
+function get_authors_works( $post = null ) {
+	$post = get_post( $post );
+	if ( ! $post ) {
+		return [];
+	}
+	$term = get_author_term( $post->ID );
+	if ( ! $term ) {
+		return [];
+	}
+	$query = new \WP_Query( [
+		'post_type'      => MemberWorks::POST_TYPE,
+		'posts_per_page' => 10,
+		'post_status'    => 'publish',
+		'tax_query'      => [
+			[
+				'taxonomy' => 'authors',
+				'field'    => 'id',
+				'terms'    => $term->term_id,
+			],
+		],
+		'orderby' => [
+			'menu_order' => 'DESC',
+			'date'       => 'DESC',
+		],
+	] );
+	return $query->posts;
 }
 
 /**
@@ -122,22 +158,56 @@ function get_profile_picture( $post = null ) {
 					<?php echo wp_kses_post( sfwj_linkify( $link ) ); ?>
 				</li>
 			<?php endforeach; ?>
+		</ul>
 		<?php
 	}
+	// 代表作があれば追加
+	$works = get_authors_works();
+	if ( ! empty( $works ) ) {
+		?>
+		<h2><?php esc_html_e( '代表作', 'sfwj' ); ?></h2>
+		<ul class="sfwj-member-work-list">
+			<?php foreach ( $works as $work ) :
+				$url   = MemberWorks::get_link( $work );
+				$image = MemberWorks::get_cover( $work );
+				?>
+				<li class="sfwj-member-work-item">
+					<?php
+					ob_start();
+					?>
+					<a class="sfwj-member-work-link" href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer">
+						<?php if ( $image ) {
+							echo sprintf( '<span class="sfwj-member-work-cover-frame">%s</span>', $image );
+						} else {
+							echo '<span class="sfwj-member-work-noimage"></span>';
+						}?>
+						<span class="sfwj-member-work-title">
+							<?php echo esc_html( get_the_title( $work ) ); ?>
+						</span>
+						<?php
+						$publishers = get_the_terms( $work, 'publisher' );
+						if ( $publishers && ! is_wp_error( $publishers ) ) :
+							?>
+							<span class="sfwj-member-work-publisher">
+								<?php echo esc_html( implode( ', ', array_map( function( $publisher ) {
+									return $publisher->name;
+								}, $publishers ) ) ); ?>
+							</span>
+						<?php endif; ?>
+					</a>
+					<?php
+					// 余計な改行を削除するためにバッファを追加
+					$link_content = ob_get_contents();
+					ob_end_clean();
+					echo preg_replace( '/(\t|\n)+/um', '', $link_content );
+					?>
+				</li>
+			<?php endforeach; ?>
+		</ul>
+		<?php
+	}
+	// バッファを追加
 	$content .= ob_get_contents();
 	ob_end_clean();
 	return $content;
-}, 1 );
-
-
-/**
- * 投稿本文の最後に代表作を追加する
- */
-\add_action( 'lightning_content_after', function() {
-	if ( ! is_singular( 'member' ) ) {
-		return '';
-	}
-
-	// 代表作を表示
-	echo 'hohohoho';
 }, 1 );
