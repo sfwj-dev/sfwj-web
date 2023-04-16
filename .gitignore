@@ -5,6 +5,7 @@ package-lock.json
 /node_modules/
 /.idea/
 Thumb.db
+.DS_Store
 *.cache
 /addons/
 /dist/
