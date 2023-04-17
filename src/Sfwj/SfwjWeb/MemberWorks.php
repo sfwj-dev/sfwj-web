@@ -564,7 +564,8 @@ class MemberWorks extends SingletonPattern {
 							<?php
 							// リンクする設定になっており、なおかつプロフィールが空ではない
 							$should_link = $attributes['link'] && trim( $m->post_content );
-							if ( $should_link ) : ?>
+							if ( $should_link ) :
+								?>
 								<a href="<?php echo get_the_permalink( $m ); ?>" class="sfwj-members-link">
 									<?php echo get_the_title( $m ); ?>
 								</a>
