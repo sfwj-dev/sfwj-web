@@ -5,11 +5,11 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "wp-env start",
-		"setup": "wp-env start && wp-env run cli wp theme activate lightning && wp-env run cli wp language core install ja && wp-env run cli language core activate ja",
+		"setup": "wp-env start && wp-env run cli wp theme activate lightning-pro && wp-env run cli wp language core install ja && wp-env run cli language core activate ja",
 		"debug": "wp-env start --xdebug",
 		"update": "wp-env start --update",
 		"stop": "wp-env stop",
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "wp-env run tests-cli ./wp-content/plugins/sfwj-web/vendor/bin/phpunit -c wp-content/plugins/sfwj-web/phpunit.xml.dist",
 		"env": "wp-env",
 		"cli": "wp-env run cli wp",
 		"cli:test": "wp-env run tests-cli wp",
@@ -34,7 +34,7 @@
 	"homepage": "https://github.com/sfwj-admin/sfwj-web#readme",
 	"devDependencies": {
 		"@kunoichi/gulp-assets-task-set": "^1.0.2",
-		"@wordpress/env": "^4.0.0",
+		"@wordpress/env": "^5.16.0",
 		"gulp": "^4.0.2"
 	}
 }

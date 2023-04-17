@@ -39,24 +39,38 @@ W.I.P
 ### ローカルのWordPressをセットアップする
 
 ```
-#必要なパッケージをダウンロード
-npm install
-#wp-envを利用してWordPressを立てる
-npm run setup
-```
-
-PhpStormなどのIDEを利用していて、WordPressのローカルインストールが必要な場合は以下のコマンドを利用してください。
-
-```
-# 必要なライブラリをインストール
+# 必要なPHPライブラリをインストール
 comopser install
-# WordPressをローカルにダウンロード
-composer setup
+# 必要なnpmパッケージをダウンロード
+npm install
+# wp-envを利用してWordPressを立てる
+npm run setup
+# WordPressを停止する
+npm stop
+# WordPressを再開する
+npm start
+```
+
+PhpStormなどのIDEを利用していて、WordPressのローカルインストールが必要な場合は以下のWP-CLIコマンドを利用してください。
+
+```
+# WordPressをローカルのwpディレクトリにダウンロード
+mkdir wp
+cd wp
+wp core download
 ```
 
 リポジトリのwpディレクトリにWordPressがダウンロードされます。
 
 ### 各種チェックツール
+
+### ユニットテストを実行する
+
+wp-envが実行されている状態で以下のコマンドを実行すると、ユニットテストを行うことができます。
+
+```
+npm run test
+```
 
 #### PHP構文チェック
 
@@ -64,6 +78,12 @@ PHP CodeSnifferを利用して構文チェックを行います。
 
 ```
 composer lint
+```
+
+軽微な文法エラーは以下のコマンドで修正できます。
+
+```
+composer fix
 ```
 
 #### CSS＆JSの構文チェック
