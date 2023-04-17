@@ -561,7 +561,10 @@ class MemberWorks extends SingletonPattern {
 					<ul class="sfwj-members-list">
 						<?php foreach ( $ms as $m ) : ?>
 						<li class="sfwj-members-item">
-							<?php if ( $attributes['link'] ) : ?>
+							<?php
+							// リンクする設定になっており、なおかつプロフィールが空ではない
+							$should_link = $attributes['link'] && trim( $m->post_content );
+							if ( $should_link ) : ?>
 								<a href="<?php echo get_the_permalink( $m ); ?>" class="sfwj-members-link">
 									<?php echo get_the_title( $m ); ?>
 								</a>
