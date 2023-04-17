@@ -98,6 +98,16 @@ function member_status( $post = null ) {
 }
 
 /**
+ * 作家タグの保存
+ */
+\add_action( 'edited_' . TAXONOMY_AUTHOR, function( $term_id, $tt_id, $args ) {
+	if ( ! wp_verify_nonce( filter_input( INPUT_POST, '_sfwjauthornonce' ), 'sfwj_update_author' ) ) {
+		return;
+	}
+	update_term_meta( $term_id, TERM_META_AUTHOR_ID, (int) filter_input( INPUT_POST, 'member_id' ) );
+}, 10, 3 );
+
+/**
  * 作家タグの編集画面
  */
 \add_action(  TAXONOMY_AUTHOR . '_edit_form_fields', function( \WP_Term $term, $taxonomy ) {
@@ -106,6 +116,7 @@ function member_status( $post = null ) {
 	<tr>
 		<th><label for="sfwj-post-author"><?php esc_html_e( '会員情報', 'sfwj' ); ?></label></th>
 		<td>
+			<?php wp_nonce_field( 'sfwj_update_author', '_sfwjauthornonce', false ); ?>
 			<select name="member_id" id="sfwj-post-author">
 				<option value="" <?php selected( $id, '' ); ?>><?php esc_html_e( '該当会員なし', 'sfwj' ); ?></option>
 				<?php foreach ( get_available_authors() as $author ) : ?>

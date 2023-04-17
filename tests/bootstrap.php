@@ -5,7 +5,7 @@
  * @package Clinics
  */
 
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
+$_tests_dir = getenv( 'WP_TESTS_DIR', true );
 
 if ( ! $_tests_dir ) {
 	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
