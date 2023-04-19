@@ -57,6 +57,12 @@
 		display: block;
 		font-size: 0.85em;
 
+		// Disable no-link.
+		&[href="#"] {
+			pointer-events: none;
+			cursor: default;
+		}
+
 		&:link,
 		&:visited {
 			color: currentColor;
