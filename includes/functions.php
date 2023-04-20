@@ -45,6 +45,8 @@ function sfwj_asset_url_and_version( $rel_path ) {
  * @return string
  */
 function sfwj_linkify( $string, $external = true ) {
-	$link = preg_replace( '@(https?://[a-zA-Z0-9.\-_?#%+/~\@]+)@u', '<a href="$1"%s>$1</a>', $string );
-	return sprintf( $link, $external ? ' target="_blank" rel="noopener noreferrer"' : '' );
+	$rel = $external ? ' target="_blank" rel="noopener noreferrer"' : '';
+	return preg_replace_callback( '@(https?://[a-zA-Z0-9.\-_?#%+/~\@]+)@u', function( $matches ) use ( $rel ) {
+		return sprintf( '<a href="%s"%s>%s</a>', esc_url( $matches[1] ), $rel, esc_html( $matches[1] ) );
+	}, $string );
 }
