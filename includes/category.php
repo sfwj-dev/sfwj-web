@@ -35,5 +35,5 @@ add_action('lightning_loop_after', function() {
 			break;
 		default:
 	}
-	echo '<a class="btn btn-secondary d-block mt-5 mx-auto" href="' .$link_url. '">' .$link_text. '</a>';
+	echo '<a class="btn btn-secondary d-block mt-5 mx-auto" href="' . $link_url . '">' . $link_text . '</a>';
 }, 10, 3);
