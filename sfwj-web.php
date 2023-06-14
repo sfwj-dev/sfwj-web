@@ -38,6 +38,7 @@ add_action( 'plugins_loaded', function () {
 	// Register hooks.
 	\Sfwj\SfwjWeb\Tools\MemberImporter::get();
 	\Sfwj\SfwjWeb\MemberWorks::get();
+	\Sfwj\SfwjWeb\Service\OpenBdSynchronizer::get();
 	// Register CLI.
 	if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		WP_CLI::add_command( 'sfwj', 'Sfwj\SfwjWeb\Command' );

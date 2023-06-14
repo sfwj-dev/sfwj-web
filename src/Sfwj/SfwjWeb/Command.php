@@ -3,6 +3,7 @@
 namespace Sfwj\SfwjWeb;
 
 use cli\Table;
+use Sfwj\SfwjWeb\Service\OpenBdSynchronizer;
 use Sfwj\SfwjWeb\Tools\CsvParser\NormalMemberCsvParser;
 
 /**
@@ -265,5 +266,41 @@ class Command extends \WP_CLI_Command {
 		}
 		\WP_CLI::line( '' );
 		\WP_CLI::success( sprintf( 'ISBNをもとに%d / %d件を取得しました。', $success, count( $posts ) ) );
+	}
+
+	/**
+	 * 修正すべき書籍データの一覧を取得する
+	 *
+	 * @return void
+	 */
+	public function books_to_sync() {
+		$posts = OpenBdSynchronizer::get()->get_posts();
+		$table = new Table();
+		$table->setHeaders( [ 'ID', 'Title', 'ISBN', 'Last Synced' ] );
+		foreach ( $posts as $post ) {
+			$table->addRow( [
+				$post->ID,
+				get_the_title( $post ),
+				get_post_meta( $post->ID, '_isbn', true ),
+				get_post_meta( $post->ID, '_last_synced', true ),
+			] );
+		}
+		$table->display();
+	}
+
+	/**
+	 * 書籍データを同期する。
+	 *
+	 * @return void
+	 */
+	public function sync_books() {
+		$result = OpenBdSynchronizer::get()->synchronize();
+		if ( is_wp_error( $result ) ) {
+			foreach ( $result->get_error_messages() as $message ) {
+				\WP_CLI::warning( $message );
+			}
+			\WP_CLI::error( 'データの同期に失敗しました。' );
+		}
+		\WP_CLI::success( sprintf( '%d件の書籍データを同期しました。', $result ) );
 	}
 }
