@@ -34,7 +34,7 @@
 	"homepage": "https://github.com/sfwj-admin/sfwj-web#readme",
 	"devDependencies": {
 		"@kunoichi/gulp-assets-task-set": "^1.0.2",
-		"@wordpress/env": "^5.16.0",
+		"@wordpress/env": "^8.4.0",
 		"gulp": "^4.0.2"
 	}
 }
