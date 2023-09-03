@@ -34,6 +34,7 @@ add_action('lightning_loop_after', function() {
 			$link_text = '過去のイベント案内';
 			break;
 		default:
+		return;
 	}
 	echo '<a class="btn btn-secondary d-block mt-5 mx-auto" href="' . $link_url . '">' . $link_text . '</a>';
 }, 10, 3);
