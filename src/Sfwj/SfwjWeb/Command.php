@@ -303,4 +303,32 @@ class Command extends \WP_CLI_Command {
 		}
 		\WP_CLI::success( sprintf( '%d件の書籍データを同期しました。', $result ) );
 	}
+
+	/**
+	 * スプレッドシートからCSVを取得する
+	 *
+	 * @synopsis <url>
+	 * @param array $args コマンドの引数
+	 *
+	 * @return void
+	 */
+	public function csv( $args ) {
+		list( $url ) = $args;
+		$result = sfwj_get_csv( $url, false );
+		if ( is_wp_error( $result ) ) {
+			\WP_CLI::error( $result->get_error_message() );
+		}
+		if ( empty( $result ) ) {
+			\WP_CLI::error( __( '該当する中身がありませんでした。', 'sfwj' ) );
+		}
+		$table = new Table();
+		foreach (  $result as $i => $row ) {
+			if ( $i ) {
+				$table->addRow( $row );
+			} else {
+				$table->setHeaders( $row );
+			}
+		}
+		$table->display();
+	}
 }
