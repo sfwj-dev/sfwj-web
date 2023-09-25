@@ -24,6 +24,7 @@ class SfAward extends SingletonPattern {
 		// ブロック登録
 		register_block_type( 'sfwj/nominees', [
 			'editor_script'   => 'sfwj-nominees',
+			'script'          => 'sfwj-nominees-helper',
 			'style'           => 'sfwj-nominees',
 			'render_callback' => [ $this, 'render' ],
 			'attributes'      => $this->attributes(),
@@ -71,18 +72,22 @@ class SfAward extends SingletonPattern {
 			if ( is_wp_error( $data ) ) {
 				throw new \Exception( $data->get_error_message(), 500 );
 			}
-			// todo: 日付指定する
-			if ( false ) {
-				$date = date_i18n( get_option( 'date_format' ) );
-				throw new \Exception( sprintf( __( 'このデータは%s以降に公開予定です。' ), $date ), 503 );
+			$published_at = (string) $attributes['published_at'];
+			if ( $published_at ) {
+				if ( preg_match( '/(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})/u', $published_at, $matches ) ) {
+					// 日付をMySQL互換性に変更
+					$published_at = sprintf( '%s-%s:00', $matches[1], $matches[2] );
+				}
 			}
+			$is_rest     = defined( 'REST_REQUEST' ) && REST_REQUEST;
+			$can_publish = ! $published_at || ( get_the_time( 'Y-m-d H:i:s' ) >= $published_at );
 			ob_start();
 			include dirname( __DIR__, 4 ) . '/includes/template-awards.php';
 			$content = ob_get_contents();
 			ob_end_clean();
 			return $content;
 		} catch ( \Exception $e ) {
-			return sprintf( '<div class="wp-block-vk-blocks-alert alert alert-danger is-text-center"><p>%s</p></div>', esc_html( $e->getMessage() ) );
+			return sprintf( '<div class="wp-block-vk-blocks-alert alert alert-info is-text-center"><p>%s</p></div>', esc_html( $e->getMessage() ) );
 		}
 	}
 }
