@@ -314,7 +314,7 @@ class Command extends \WP_CLI_Command {
 	 */
 	public function csv( $args ) {
 		list( $url ) = $args;
-		$result = sfwj_get_csv( $url, false );
+		$result      = sfwj_get_csv( $url, false );
 		if ( is_wp_error( $result ) ) {
 			\WP_CLI::error( $result->get_error_message() );
 		}
@@ -322,7 +322,7 @@ class Command extends \WP_CLI_Command {
 			\WP_CLI::error( __( '該当する中身がありませんでした。', 'sfwj' ) );
 		}
 		$table = new Table();
-		foreach (  $result as $i => $row ) {
+		foreach ( $result as $i => $row ) {
 			if ( $i ) {
 				$table->addRow( $row );
 			} else {

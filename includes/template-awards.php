@@ -39,7 +39,7 @@ if ( empty( $data ) ) {
 // IDではなく、ノミネート潤を変更
 foreach ( $data as $i => &$d ) {
 	$i++;
-	array_unshift( $d,  $i );
+	array_unshift( $d, $i );
 }
 // 新着順にソート
 usort( $data, function( $a, $b ) {
@@ -60,7 +60,7 @@ usort( $data, function( $a, $b ) {
 			</strong>
 		</div>
 		<div class="text-right">
-			<button class="sfwj-nominees-open-all btn btn-outline-secondary btn-sm"><?php esc_html_e( 'すべてのコメントを展開', 'sfwj' ) ?></button>
+			<button class="sfwj-nominees-open-all btn btn-outline-secondary btn-sm"><?php esc_html_e( 'すべてのコメントを展開', 'sfwj' ); ?></button>
 		</div>
 		<div>
 			<select id="sfwj-nominees-sort">
@@ -69,11 +69,12 @@ usort( $data, function( $a, $b ) {
 			</select>
 		</div>
 		<div class="text-right">
-			<input class="sfwj-nominees-filter" type="text" placeholder="<?php esc_attr_e( '文字で絞り込み', 'sfwj' ) ?>" />
+			<input class="sfwj-nominees-filter" type="text" placeholder="<?php esc_attr_e( '文字で絞り込み', 'sfwj' ); ?>" />
 		</div>
 	</div>
 	<ol class="sfwj-nominees-list">
-		<?php foreach ( $data as $row ) :
+		<?php
+		foreach ( $data as $row ) :
 			list( $index, $id, $timestamp, $mail, $voted_by, $title, $author, $comment, $sns_available, $status, $checked_by, $work_id, $publisher ) = $row;
 			$formatted = new DateTime( $timestamp, new DateTimeZone( wp_timezone_string() ) );
 			?>

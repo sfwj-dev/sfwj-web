@@ -7,7 +7,7 @@
 const { registerBlockType } = wp.blocks;
 const { __ } = wp.i18n;
 const { InspectorControls } = wp.blockEditor;
-const { PanelBody, TextControl, DateTimePicker } = wp.components;
+const { PanelBody, TextControl } = wp.components;
 const { serverSideRender: ServerSideRender } = wp;
 
 /* global SwfNomineesVars:false */

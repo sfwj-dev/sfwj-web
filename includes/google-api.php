@@ -137,15 +137,15 @@ function sfwj_get_csv( $url, $use_cache = true ) {
 	list( $all, $id, $sheet_id ) = $matches;
 	try {
 		$ga = sfwj_google_auth_client( [
-			Google\Service\Sheets::SPREADSHEETS_READONLY
+			Google\Service\Sheets::SPREADSHEETS_READONLY,
 		] );
 		if ( is_wp_error( $ga ) ) {
 			return $ga;
 		}
-		$sheet      = new Google_Service_Sheets($ga );
+		$sheet      = new Google_Service_Sheets( $ga );
 		$sheet_name = '';
-		$response = $sheet->spreadsheets->get( $id );
-		foreach( $response->getSheets() as $sheet_meta ) {
+		$response   = $sheet->spreadsheets->get( $id );
+		foreach ( $response->getSheets() as $sheet_meta ) {
 			if ( $sheet_meta->getProperties()->getSheetId() === (int) $sheet_id ) {
 				$sheet_name = $sheet_meta->getProperties()->getTitle();
 				break;

@@ -46,7 +46,7 @@ class SfAward extends SingletonPattern {
 				'type'    => 'string',
 				'default' => '',
 			],
-			'spreadsheet' => [
+			'spreadsheet'  => [
 				'type'    => 'string',
 				'default' => '',
 			],

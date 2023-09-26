@@ -29,7 +29,6 @@ $( document ).ready( () => {
 			// 該当するやつだけ表示
 			let hit = 0;
 			$( '.sfwj-nominees-item' ).each( function() {
-				console.log( $( this ).text(), msg, $( this ).text().indexOf( msg ) );
 				if ( $( this ).text().indexOf( msg ) > -1 ) {
 					// 検索にヒット
 					$( this ).removeClass( 'd-none' );
@@ -52,8 +51,7 @@ $( document ).ready( () => {
 
 	$( '#sfwj-nominees-sort' ).on( 'change', function() {
 		const order = $( this ).val();
-		const $list = $( '.sfwj-nominees-item' );
-		let sorter = null;
+		let sorter;
 		switch ( order ) {
 			case 'asc':
 				sorter = function( a, b ) {
@@ -69,14 +67,14 @@ $( document ).ready( () => {
 				return false;
 		}
 		// 昇順降順を並び替え
+		const $list = $( '.sfwj-nominees-item' );
 		$list.sort( function( a, b ) {
 			const aIndex = parseInt( $( a ).data( 'index' ), 10 );
 			const bIndex = parseInt( $( b ).data( 'index' ), 10 );
 			if ( aIndex === bIndex ) {
 				return 0;
-			} else {
-				return sorter( aIndex, bIndex );
 			}
+			return sorter( aIndex, bIndex );
 		} );
 		$list.each( function( index, elem ) {
 			$( '.sfwj-nominees-list' ).append( elem );
