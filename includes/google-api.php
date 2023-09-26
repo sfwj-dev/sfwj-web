@@ -156,10 +156,8 @@ function sfwj_get_csv( $url, $use_cache = true ) {
 		}
 		$response = $sheet->spreadsheets_values->get( $id, $sheet_name );
 		$result   = $response->getValues();
-		if ( $use_cache ) {
-			// キャッシュを使う設定なので、キャッシュを1日保存
-			set_transient( 'sfwj-csv-' . md5( $url ), $result, 3600 * 24 );
-		}
+		// キャッシュを1日保存
+		set_transient( 'sfwj-csv-' . md5( $url ), $result, 3600 * 24 );
 		return $result;
 	} catch ( \Exception $e ) {
 		return new WP_Error( 'sfwj-google-api-error', $e->getMessage(), [
