@@ -14,6 +14,24 @@ function sfwj_google_service_account() {
 }
 
 /**
+ * Google API Clientを取得する
+ *
+ * @param string[] $scopes スコープ
+ *
+ * @return WP_Error|Google\Client
+ */
+function sfwj_google_auth_client( $scopes = [] ) {
+	$key = sfwj_google_service_account();
+	if ( ! $key ) {
+		return new WP_Error( 'service_account_invalid', __( '認証情報が設定されていません。', 'sfwj' ) );
+	}
+	$ga = new Google\Client();
+	$ga->setAuthConfig( json_decode( $key, true ) );
+	$ga->setScopes( $scopes );
+	return $ga;
+}
+
+/**
  * Get Google API Client
  *
  * @return WP_Error|Google\Service\Drive
@@ -24,13 +42,7 @@ function sfwj_google_client() {
 		return $client;
 	}
 	try {
-		$key = sfwj_google_service_account();
-		if ( ! $key ) {
-			throw new Exception( __( '認証情報が設定されていません。', 'sfwj' ) );
-		}
-		$ga = new Google\Client();
-		$ga->setAuthConfig( json_decode( $key, true ) );
-		$ga->setScopes( [
+		$ga = sfwj_google_auth_client( [
 			'https://www.googleapis.com/auth/drive',
 			'https://www.googleapis.com/auth/drive.file',
 			'https://www.googleapis.com/auth/drive.appdata',
@@ -39,6 +51,9 @@ function sfwj_google_client() {
 			'https://www.googleapis.com/auth/drive.photos.readonly',
 			'https://www.googleapis.com/auth/drive.readonly',
 		] );
+		if ( is_wp_error( $ga ) ) {
+			return $ga;
+		}
 		$service = new Google\Service\Drive( $ga );
 		$client  = $service;
 		return $service;
@@ -98,5 +113,57 @@ function sfwj_save_file( $url, $post_id = 0 ) {
 		return media_handle_sideload( $file_info, $post_id );
 	} catch ( \Exception $e ) {
 		return new WP_Error( 'sfwj-google-api-error', $e->getMessage() );
+	}
+}
+
+/**
+ * スプレッドシートからCSVを取得する
+ *
+ * @param string $url スプレッドシートのURL
+ * @param
+ * @return WP_Error|array
+ */
+function sfwj_get_csv( $url, $use_cache = true ) {
+	if ( $use_cache ) {
+		// キャッシュを使う設定なので、キャッシュがあればそれを返す。
+		$cache = get_transient( 'sfwj-csv-' . md5( $url ) );
+		if ( false !== $cache ) {
+			return $cache;
+		}
+	}
+	if ( ! preg_match( '@https://docs\.google\.com/spreadsheets/d/([^/]+)/edit#gid=(.*)@u', $url, $matches ) ) {
+		return new WP_Error( 'sfwj-invalid-url', __( 'URLが正しくありません。', 'sfwj' ) );
+	}
+	list( $all, $id, $sheet_id ) = $matches;
+	try {
+		$ga = sfwj_google_auth_client( [
+			Google\Service\Sheets::SPREADSHEETS_READONLY,
+		] );
+		if ( is_wp_error( $ga ) ) {
+			return $ga;
+		}
+		$sheet      = new Google_Service_Sheets( $ga );
+		$sheet_name = '';
+		$response   = $sheet->spreadsheets->get( $id );
+		foreach ( $response->getSheets() as $sheet_meta ) {
+			if ( $sheet_meta->getProperties()->getSheetId() === (int) $sheet_id ) {
+				$sheet_name = $sheet_meta->getProperties()->getTitle();
+				break;
+			}
+		}
+		if ( ! $sheet_name ) {
+			throw new Exception( __( 'シートが見つかりませんでした。', 'sfwj' ), 404 );
+		}
+		$response = $sheet->spreadsheets_values->get( $id, $sheet_name );
+		$result   = $response->getValues();
+		if ( $use_cache ) {
+			// キャッシュを使う設定なので、キャッシュを1日保存
+			set_transient( 'sfwj-csv-' . md5( $url ), $result, 3600 * 24 );
+		}
+		return $result;
+	} catch ( \Exception $e ) {
+		return new WP_Error( 'sfwj-google-api-error', $e->getMessage(), [
+			'code' => $e->getCode(),
+		] );
 	}
 }

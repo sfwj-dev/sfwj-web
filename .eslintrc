@@ -32,7 +32,8 @@
 		"object-property-newline": "off",
 		"yoda": "off",
 		"strict": "off",
-		"@wordpress/valid-sprintf": "off"
+		"@wordpress/valid-sprintf": "off",
+		"camelcase": "off"
 	},
 	"settings": {
 		"react": {

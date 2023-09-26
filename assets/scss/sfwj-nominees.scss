@@ -1,0 +1,114 @@
+/*
+ * SF大賞ノミネートリスト
+ *
+ * @handle sfwj-nominees
+ * @deps
+ */
+
+.sfwj-nominees {
+
+	&-stats {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+
+		> div {
+			width: 50%;
+			padding: 10px;
+			flex: 0 1 50%;
+		}
+	}
+
+	&-list {
+		padding: 0 !important;
+		border-bottom: 1px dashed #ccc;
+
+		+ .alert {
+			display: none;
+		}
+
+		&-empty + .alert {
+			display: block;
+		}
+	}
+
+	&-item {
+		list-style: none !important;
+		margin-top: 0 !important;
+		margin-bottom: 0 !important;
+		padding: 40px 0 !important;
+		border-top: 1px dashed #ccc;
+
+		&-footer {
+			margin: 10px 0 0 !important;
+			text-align: center;
+
+			&-close {
+				display: none;
+
+				.detail-open & {
+					display: inline;
+				}
+			}
+
+			.detail-open &-open {
+				display: none;
+			}
+		}
+	}
+
+	&-title {
+		margin-top: 10px !important;
+		margin-bottom: 20px !important;
+		font-size: 1.5rem;
+
+		span {
+			display: block;
+		}
+	}
+
+	&-publisher {
+		text-align: right;
+		font-size: 12px;
+		margin-top: 10px;
+	}
+
+	&-id {
+		background-color: var(--vk-color-background-black, #222);
+		color: #fff;
+		display: inline-block;
+		padding: 5px 3px;
+	}
+
+	&-meta {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+		margin: 20px 0;
+	}
+
+	&-description {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+
+		height: 4em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		--webkit-line-clamp: 2;
+		line-clamp: 2;
+
+		.detail-open & {
+			height: auto;
+
+			p {
+				opacity: 1;
+			}
+		}
+
+		p {
+			line-height: 1.4;
+			margin: 0 !important;
+			opacity: 0.8;
+		}
+	}
+}

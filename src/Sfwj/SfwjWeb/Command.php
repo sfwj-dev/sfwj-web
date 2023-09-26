@@ -303,4 +303,52 @@ class Command extends \WP_CLI_Command {
 		}
 		\WP_CLI::success( sprintf( '%d件の書籍データを同期しました。', $result ) );
 	}
+
+	/**
+	 * スプレッドシートからCSVを取得する
+	 *
+	 * @synopsis <url>
+	 * @param array $args コマンドの引数
+	 *
+	 * @return void
+	 */
+	public function csv( $args ) {
+		list( $url ) = $args;
+		$result      = sfwj_get_csv( $url, false );
+		if ( is_wp_error( $result ) ) {
+			\WP_CLI::error( $result->get_error_message() );
+		}
+		if ( empty( $result ) ) {
+			\WP_CLI::error( __( '該当する中身がありませんでした。', 'sfwj' ) );
+		}
+		$table = new Table();
+		foreach ( $result as $i => $row ) {
+			if ( $i ) {
+				$table->addRow( $row );
+			} else {
+				$table->setHeaders( $row );
+			}
+		}
+		$table->display();
+	}
+
+	/**
+	 * SF大賞のスプレッドシートを更新する
+	 *
+	 * ## OPTION
+	 *
+	 * [<post_id>]
+	 * : 指定した場合、特定の投稿を更新する。
+	 *
+	 * @synopsis [<post_id>]
+	 * @param array $args コマンドの引数
+	 * @return void
+	 */
+	public function refresh_award( $args ) {
+		$result = sfwj_refresh_awards();
+		if ( is_wp_error( $result ) ) {
+			\WP_CLI::error( $result->get_error_message() );
+		}
+		\WP_CLI::success( sprintf( 'Success: %d URL', $result ) );
+	}
 }
