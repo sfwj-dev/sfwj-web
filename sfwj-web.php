@@ -33,6 +33,7 @@ add_action( 'plugins_loaded', function () {
 	require_once __DIR__ . '/includes/google-api.php';
 	require_once __DIR__ . '/includes/openbd-api.php';
 	require_once __DIR__ . '/includes/template-member.php';
+	require_once __DIR__ . '/includes/sf-awards.php';
 	require_once __DIR__ . '/includes/taxonomy.php';
 	require_once __DIR__ . '/includes/category.php';
 	// Register hooks.
