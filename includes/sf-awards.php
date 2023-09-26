@@ -22,7 +22,7 @@ function sfwj_refresh_awards( $id = 0 ) {
 	}
 	$query = new WP_Query( $args );
 	if ( ! $query->have_posts() ) {
-		return new WP_Error( 'not_found', __( 'SF大賞のブロックが見つかりませんでした。', 'sfwj' ) );
+		return 0;
 	}
 	$errors  = new WP_Error();
 	$success = 0;
@@ -114,4 +114,23 @@ add_action( 'wp_ajax_sfwj_refresh_awards', function() {
 		'sfwj-award-refreshed' => $result,
 	], admin_url( 'tools.php' ) ) );
 	exit;
+} );
+
+/**
+ * Cronを登録する
+ */
+add_action( 'init', function() {
+	if ( ! wp_next_scheduled( 'sfwj_sync_spreadsheet' ) ) {
+		wp_schedule_event( time(), 'hourly', 'sfwj_sync_spreadsheet' );
+	}
+} );
+
+/**
+ * スプレッドシートをCRONで更新する。
+ */
+add_action( 'sfwj_sync_spreadsheet', function() {
+	$result = sfwj_refresh_awards();
+	if ( is_wp_error( $result ) ) {
+		error_log( $result->get_error_message() );
+	}
 } );
