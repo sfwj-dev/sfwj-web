@@ -42,3 +42,39 @@ add_action( 'lightning_loop_after',
 	10,
 	3
 );
+
+/**
+ * VK_投稿リストブロックをニュース一覧として使用する際、特定のカテゴリーを除外する
+ * 
+ * - ブロックのclassに "news-list" が含まれていたらニュース一覧と判断する
+ * - 除外するカテゴリーは、function内の $exclude_cat_slug にスラッグを直書きする
+ * 
+ * @param array(str) $exclude_cat_slug カテゴリースラッグ
+ * @return \WP_Query\args
+ *
+ */
+add_filter(
+	'vk_blocks_post_list_query_args',
+	function( $args, $attributes ) {
+		// 除外するカテゴリーのスラッグを指定
+		$exclude_cat_slug = array( 'exclude-list', 'events' );
+		if ( !is_array( $exclude_cat_slug ) ) {
+			return;
+		}
+		if ( strpos( $attributes[ 'className' ], 'news-list' ) !== false ) {
+			$exclude_cat = array();
+			foreach ( $exclude_cat_slug as $slug ) {
+				$exclude_cat[] = get_category_by_slug( $slug ) -> cat_ID;
+			}
+			
+			$args['tax_query'][] = array(
+				'taxonomy' => 'category',
+				'terms'    => $exclude_cat,
+				'operator' => 'NOT IN',
+			);
+		}
+		return $args;
+	},
+	10,
+	2
+);
