@@ -1,0 +1,40 @@
+/**
+ * VK_投稿リストブロックをニュース一覧として使用する際のスタイル
+ *
+ * @handle sfwj-news-list
+ */
+
+.news-list {
+
+	.vk_post {
+
+		.media-img {
+			margin: 4px 1em 8px 0;
+			width: 152px;
+			height: 152px;
+		}
+
+		.vk_post_title {
+			display: block;
+			margin-bottom: var(--vk-margin-meta);
+			font-weight: inherit;
+			font-size: inherit;
+			color: var(--vk-color-text-body);
+			text-decoration: none;
+			overflow: hidden;
+		}
+
+		.vk_post_date {
+			font-size: var(--vk-size-text-sm);
+			color: var(--vk-color-text-light);
+		}
+
+		.vk_post_excerpt {
+			margin-top: var(--vk-margin-meta);
+			font-size: var(--vk-size-text-sm);
+			color: var(--vk-color-text-body);
+		}
+
+	}
+
+}
