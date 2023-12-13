@@ -30,6 +30,7 @@ add_action( 'plugins_loaded', function () {
 	require_once __DIR__ . '/includes/functions.php';
 	require_once __DIR__ . '/includes/settings.php';
 	require_once __DIR__ . '/includes/member-importer.php';
+	require_once __DIR__ . '/includes/member-publication.php';
 	require_once __DIR__ . '/includes/google-api.php';
 	require_once __DIR__ . '/includes/openbd-api.php';
 	require_once __DIR__ . '/includes/template-member.php';
