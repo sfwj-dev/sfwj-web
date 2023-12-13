@@ -25,7 +25,7 @@ if ( ! $can_publish ) {
 }
 // データ
 $data = array_values( array_filter( $data, function( $row ) {
-	return '公開' === $row[8];
+	return isset( $row[8] ) && '公開' === $row[8];
 } ) );
 // 表示すべきデータが存在しないので、出力しない。
 if ( empty( $data ) ) {
@@ -38,7 +38,7 @@ if ( empty( $data ) ) {
 }
 // IDではなく、ノミネート潤を変更
 foreach ( $data as $i => &$d ) {
-	$i++;
+	++$i;
 	array_unshift( $d, $i );
 }
 // 新着順にソート

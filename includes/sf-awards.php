@@ -44,7 +44,7 @@ function sfwj_refresh_awards( $id = 0 ) {
 		if ( is_wp_error( $result ) ) {
 			$errors->add( $result->get_error_code(), $result->get_error_message() );
 		} else {
-			$success++;
+			++$success;
 		}
 	}
 	if ( ! $errors->get_error_messages() ) {

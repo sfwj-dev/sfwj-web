@@ -3,7 +3,7 @@
 namespace Sfwj\SfwjWeb\Service;
 
 use Sfwj\SfwjWeb\MemberWorks;
-use \Sfwj\SfwjWeb\Patterns\SingletonPattern;
+use Sfwj\SfwjWeb\Patterns\SingletonPattern;
 
 /**
  * OpenBdとデータを同期する
@@ -89,7 +89,7 @@ class OpenBdSynchronizer extends SingletonPattern {
 			if ( is_wp_error( $result ) ) {
 				$errors->add( $result->get_error_code(), $result->get_error_message() );
 			} else {
-				$success++;
+				++$success;
 			}
 		}
 		if ( $errors->get_error_messages() ) {

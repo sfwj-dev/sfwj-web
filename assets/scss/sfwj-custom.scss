@@ -4,6 +4,9 @@
  * @handle sfwj-custom
  */
 
+@import "custom/profile";
+@import "custom/work";
+
 .entry-body {
 
 	p {
@@ -16,4 +19,3 @@
 	}
 }
 
-@import "custom/*";

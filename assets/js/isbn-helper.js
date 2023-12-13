@@ -10,7 +10,6 @@ const { __, sprintf } = wp.i18n;
 const { apiFetch } = wp;
 
 $( document ).ready( function() {
-
 	$( 'button[data-book-id]' ).click( function( e ) {
 		e.preventDefault();
 		const isbn = $( 'input[name="_isbn"]' ).val();
@@ -24,12 +23,14 @@ $( document ).ready( function() {
 				data: {
 					isbn,
 				},
-			} ).then( ( res ) => {
-				alert( res.message );
-				window.location.href = res.url;
-			} ).catch( ( res ) => {
-				alert( res.message );
-			} );
+			} )
+				.then( ( res ) => {
+					alert( res.message );
+					window.location.href = res.url;
+				} )
+				.catch( ( res ) => {
+					alert( res.message );
+				} );
 		}
 	} );
 } );
