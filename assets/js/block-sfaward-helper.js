@@ -8,7 +8,6 @@
 const $ = jQuery;
 
 $( document ).ready( () => {
-
 	$( '.sfwj-nominees-button' ).click( function( e ) {
 		e.preventDefault();
 		$( this ).parents( '.sfwj-nominees-item' ).toggleClass( 'detail-open' );
@@ -25,7 +24,7 @@ $( document ).ready( () => {
 			clearTimeout( timer );
 		}
 		const msg = $( this ).val();
-		timer = setTimeout( ()=> {
+		timer = setTimeout( () => {
 			// 該当するやつだけ表示
 			let hit = 0;
 			$( '.sfwj-nominees-item' ).each( function() {
@@ -33,7 +32,7 @@ $( document ).ready( () => {
 					// 検索にヒット
 					$( this ).removeClass( 'd-none' );
 					hit++;
-				} else if ( msg.length < 1 )  {
+				} else if ( msg.length < 1 ) {
 					// そもそも文字列がない
 					$( this ).removeClass( 'd-none' );
 				} else {
@@ -41,12 +40,16 @@ $( document ).ready( () => {
 					$( this ).addClass( 'd-none' );
 				}
 				if ( hit || msg.length < 1 ) {
-					$( '.sfwj-nominees-list' ).removeClass( 'sfwj-nominees-list-empty' );
+					$( '.sfwj-nominees-list' ).removeClass(
+						'sfwj-nominees-list-empty'
+					);
 				} else {
-					$( '.sfwj-nominees-list' ).addClass( 'sfwj-nominees-list-empty' );
+					$( '.sfwj-nominees-list' ).addClass(
+						'sfwj-nominees-list-empty'
+					);
 				}
 			} );
-		} , 1000 );
+		}, 1000 );
 	} );
 
 	$( '#sfwj-nominees-sort' ).on( 'change', function() {

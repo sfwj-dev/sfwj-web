@@ -40,13 +40,13 @@ function sfwj_asset_url_and_version( $rel_path ) {
 /**
  * リンクを自動的にリンクに変換する。
  *
- * @param string $string URLを含む文字列
+ * @param string $str URLを含む文字列
  * @param bool $external 外部リンクにするかどうか
  * @return string
  */
-function sfwj_linkify( $string, $external = true ) {
+function sfwj_linkify( $str, $external = true ) {
 	$rel = $external ? ' target="_blank" rel="noopener noreferrer"' : '';
 	return preg_replace_callback( '@(https?://[a-zA-Z0-9.\-_?#%+/~\@]+)@u', function( $matches ) use ( $rel ) {
 		return sprintf( '<a href="%s"%s>%s</a>', esc_url( $matches[1] ), $rel, esc_html( $matches[1] ) );
-	}, $string );
+	}, $str );
 }

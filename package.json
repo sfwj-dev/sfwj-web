@@ -13,11 +13,21 @@
 		"env": "wp-env",
 		"cli": "wp-env run cli wp",
 		"cli:test": "wp-env run tests-cli wp",
-		"gulp": "gulp",
-		"gulp:task": "gulp --tasks",
-		"build": "gulp build",
-		"lint": "gulp lint",
-		"watch": "gulp watch"
+		"env:install": "wp core download --path=wp --locale=ja",
+		"env:download": "node ./bin/compiler.js env",
+		"build": "npm run build:js && npm run build:css && npm run dump && npm run imagemin",
+		"build:css": "sass ./assets/scss/:./dist/css/ && postcss ./dist/css/**/*.css --replace",
+		"build:js": "node ./bin/compiler.js js",
+		"dump": "node ./bin/compiler.js dump",
+		"lint": "npm run lint:js && npm run lint:css",
+		"lint:css": "wp-scripts lint-style ./assets/**/*.scss",
+		"lint:js": "wp-scripts lint-js ./assets",
+		"imagemin": "node ./bin/imagemin.mjs assets/image dist/image",
+		"format:js": "wp-scripts format ./assets",
+		"watch": "npm-watch"
+	},
+	"engines": {
+		"node": ">=18.0.0"
 	},
 	"repository": {
 		"type": "git",
@@ -26,15 +36,26 @@
 	"keywords": [
 		"wordpress"
 	],
-	"author": "Kunoichi INC",
+	"author": "SFWJ",
 	"license": "GPL-3.0-or-later",
 	"bugs": {
 		"url": "https://github.com/sfwj-admin/sfwj-web/issues"
 	},
 	"homepage": "https://github.com/sfwj-admin/sfwj-web#readme",
 	"devDependencies": {
-		"@kunoichi/gulp-assets-task-set": "^1.0.2",
-		"@wordpress/env": "^8.7.0",
-		"gulp": "^4.0.2"
+		"@kunoichi/grab-deps": "^1.3.1",
+		"@wordpress/create-block": "^4.31.0",
+		"@wordpress/env": "^8.13.0",
+		"@wordpress/scripts": "^26.18.0",
+		"@wordpress/stylelint-config": "^21.30.0",
+		"cssnano": "^6.0.1",
+		"glob": "^10.3.10",
+		"imagemin": "^8.0.1",
+		"imagemin-gifsicle": "^7.0.0",
+		"imagemin-jpegtran": "^7.0.0",
+		"imagemin-pngquant": "^9.0.2",
+		"imagemin-svgo": "^10.0.1",
+		"npm-watch": "^0.11.0",
+		"postcss-cli": "^11.0.0"
 	}
 }

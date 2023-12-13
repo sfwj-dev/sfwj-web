@@ -5,7 +5,6 @@
  * @deps wp-blocks, wp-i18n, wp-components, wp-block-editor, wp-server-side-render
  */
 
-
 /* global SfwjMemberStatus:false */
 
 const { registerBlockType } = wp.blocks;
@@ -15,7 +14,6 @@ const { PanelBody, SelectControl, ToggleControl } = wp.components;
 const { serverSideRender: ServerSideRender } = wp;
 
 registerBlockType( 'sfwj/members', {
-
 	title: __( '会員一覧ブロック', 'sfwj' ),
 
 	icon: 'user',
@@ -44,22 +42,33 @@ registerBlockType( 'sfwj/members', {
 			<>
 				<InspectorControls>
 					<PanelBody title={ __( '会員ブロック', 'sfwj' ) }>
-						<SelectControl value={ attributes.status }
+						<SelectControl
+							value={ attributes.status }
 							label={ __( '表示する会員種別', 'sfwj' ) }
 							options={ SfwjMemberStatus }
-							onChange={ ( status ) => setAttributes( { status } ) } />
-						<ToggleControl label={ __( '50音でわける', 'sfwj' ) }
-							onChange={ ( grouping ) => setAttributes( { grouping } ) }
-							checked={ attributes.grouping} />
-						<ToggleControl label={ __( 'リンクする', 'sfwj' ) }
+							onChange={ ( status ) =>
+								setAttributes( { status } )
+							}
+						/>
+						<ToggleControl
+							label={ __( '50音でわける', 'sfwj' ) }
+							onChange={ ( grouping ) =>
+								setAttributes( { grouping } )
+							}
+							checked={ attributes.grouping }
+						/>
+						<ToggleControl
+							label={ __( 'リンクする', 'sfwj' ) }
 							onChange={ ( link ) => setAttributes( { link } ) }
-							checked={ attributes.link } />
+							checked={ attributes.link }
+						/>
 					</PanelBody>
 				</InspectorControls>
 				<div className="sfwj-member-block">
 					<ServerSideRender
 						block="sfwj/members"
-						attributes={ attributes } />
+						attributes={ attributes }
+					/>
 				</div>
 			</>
 		);

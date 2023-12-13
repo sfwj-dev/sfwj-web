@@ -45,7 +45,7 @@ abstract class CsvParser {
 		$line_no = 0;
 		$success = 0;
 		foreach ( $file_obj as $row ) {
-			$line_no++;
+			++$line_no;
 			if ( 1 === $line_no ) {
 				// ヘッダー行はスキップ
 				continue;
@@ -56,7 +56,7 @@ abstract class CsvParser {
 					$errors->add( 'csv_import_error', $message );
 				}
 			} else {
-				$success++;
+				++$success;
 			}
 		}
 		if ( $errors->get_error_message() ) {

@@ -121,7 +121,7 @@ class Command extends \WP_CLI_Command {
 			] );
 			// 更新日時を保存
 			update_post_meta( $post->ID, '_google_fetched', current_time( 'mysql' ) );
-			$success++;
+			++$success;
 			\WP_CLI::line( 'OK: ' . $url );
 		}
 		\WP_CLI::line( '' );
@@ -203,7 +203,7 @@ class Command extends \WP_CLI_Command {
 			if ( $profile_pic_id ) {
 				update_post_meta( $post->ID, '_profile_pic_id', $profile_pic_id );
 			}
-			$success++;
+			++$success;
 		}
 		\WP_CLI::line( '' );
 		\WP_CLI::success( sprintf( 'プロフィール画像を%d件取得しました。', $success ) );
@@ -260,7 +260,7 @@ class Command extends \WP_CLI_Command {
 			if ( is_wp_error( $result ) ) {
 				\WP_CLI::warning( sprintf( 'Error   #%d %s: %s', $post->ID, $post->post_title, $result->get_error_message() ) );
 			} else {
-				$success++;
+				++$success;
 				\WP_CLI::line( sprintf( 'Success #%d %s', $post->ID, $post->post_title ) );
 			}
 		}

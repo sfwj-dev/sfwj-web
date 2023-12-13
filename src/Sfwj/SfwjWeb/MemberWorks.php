@@ -639,6 +639,5 @@ class MemberWorks extends SingletonPattern {
 		}
 		// ない場合はシャープ
 		return '#';
-
 	}
 }

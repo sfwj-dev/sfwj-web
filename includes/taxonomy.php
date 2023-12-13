@@ -133,3 +133,15 @@ function member_status( $post = null ) {
 	</tr>
 	<?php
 }, 10, 2 );
+
+/**
+ * 会員に「貢献」というタクソノミーをつける
+ */
+add_action( 'init', function() {
+	register_taxonomy( 'contribution', 'member', [
+		'label'             => __( '貢献', 'sfwj' ),
+		'public'            => true,
+		'hierarchical'      => true,
+		'show_admin_column' => true,
+	] );
+} );
