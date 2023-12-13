@@ -3,6 +3,7 @@ composer.lock
 /wp/
 package-lock.json
 /node_modules/
+/.vscode/
 /.idea/
 Thumb.db
 .DS_Store
