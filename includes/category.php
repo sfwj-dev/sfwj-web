@@ -24,7 +24,7 @@ add_action( 'lightning_loop_after',
 				break;
 			case 'japan-sf-grand-prize':
 				$link_url  = '/awards/';
-				$link_text = '過去の日本SF大賞';
+				$link_text = '第42回以前の日本ＳＦ大賞';
 				break;
 			case 'members-publication':
 				$link_url  = '/books/';
