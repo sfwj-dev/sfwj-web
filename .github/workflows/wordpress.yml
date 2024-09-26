@@ -2,8 +2,6 @@ name: WordPress Plugin CI/CD
 
 on:
   push:
-    branches:
-      - main
     tags:
       - '*'
   pull_request:
@@ -58,6 +56,26 @@ jobs:
       - name: Run test suite
         run: composer test
 
+  lint:
+    runs-on: ubuntu-latest
+    name: PHP Syntax Check
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Setup PHP with composer v2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          tools: composer
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
       - name: Check Lint
         run: composer lint
 
@@ -80,11 +98,13 @@ jobs:
 
   check-status:
     name: Status Check
-    needs: [ test, assets ]
+    if: always()
+    needs: [ test, assets, lint ]
     runs-on: ubuntu-latest
     steps:
-      - name: Display Status
-        run: echo 'All Green!'
+      - uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
 
   release:
     name: Release Build for Composer
