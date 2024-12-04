@@ -215,7 +215,7 @@ function get_authors_works( $post = null ) {
 	}
 	// 新刊案内が存在していれば表示
 	$query = get_author_news( 3 );
-	if ( $query->have_posts() ) {
+	if ( $query && $query->have_posts() ) {
 		?>
 		<h2><?php printf( esc_html__( '%sの新刊案内', 'sfwj' ), esc_html( get_post()->post_title ) ); ?></h2>
 		<ul class="sfwj-profile-links">
