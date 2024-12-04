@@ -49,7 +49,7 @@
 		"@wordpress/scripts": "^26.18.0",
 		"@wordpress/stylelint-config": "^21.30.0",
 		"cssnano": "^6.0.1",
-		"glob": "^10.3.10",
+		"glob": "^11.0.0",
 		"imagemin": "^8.0.1",
 		"imagemin-gifsicle": "^7.0.0",
 		"imagemin-jpegtran": "^7.0.0",
