@@ -117,6 +117,35 @@ function sfwj_save_file( $url, $post_id = 0 ) {
 }
 
 /**
+ * スプレッドシートからシートIDを取得する
+ *
+ * @param string $url スプレッドシートのURL
+ * @return string|WP_Error
+ */
+function sfwj_extract_sheet_id( $url ) {
+	$sheet_id = null;
+	// URLを分解しクエリパラメータから取得する
+	$parsed_url = parse_url( $url );
+	if ( isset( $parsed_url['query'] ) ) {
+		parse_str( $parsed_url['query'], $params );
+		if ( isset( $params['gid'] ) ) {
+			$sheet_id = $params['gid'];
+		}
+	}
+	// ハッシュ部分からgidを取得（上記で取得できなかった場合のみ）
+	if ( is_null( $sheet_id ) && isset( $parsed_url['fragment'] ) ) {
+		parse_str( $parsed_url['fragment'], $fragments );
+		if ( isset( $fragments['gid'] ) ) {
+			$sheet_id = $fragments['gid'];
+		}
+	}
+	if ( ! $sheet_id ) {
+		return new WP_Error( 'sfwj-invalid-url', __( 'シートIDが取得できません。', 'sfwj' ) );
+	}
+	return $sheet_id;
+}
+
+/**
  * スプレッドシートからCSVを取得する
  *
  * @param string $url スプレッドシートのURL
@@ -132,10 +161,16 @@ function sfwj_get_csv( $url, $use_cache = true ) {
 			return $cache;
 		}
 	}
-	if ( ! preg_match( '@https://docs\.google\.com/spreadsheets/d/([^/]+)/edit#gid=(.*)@u', $url, $matches ) ) {
+	// URLからIDを取得
+	if ( ! preg_match( '@https://docs\.google\.com/spreadsheets/d/([^/]+)/edit@u', $url, $matches ) ) {
 		return new WP_Error( 'sfwj-invalid-url', __( 'URLが正しくありません。', 'sfwj' ) );
 	}
-	list( $all, $id, $sheet_id ) = $matches;
+	list( $all, $id ) = $matches;
+	// URLからシートIDを取得
+	$sheet_id = sfwj_extract_sheet_id( $url );
+	if ( is_wp_error( $sheet_id ) ) {
+		return $sheet_id;
+	}
 	try {
 		$ga = sfwj_google_auth_client( [
 			Google\Service\Sheets::SPREADSHEETS_READONLY,

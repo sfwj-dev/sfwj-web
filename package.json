@@ -45,7 +45,7 @@
 	"devDependencies": {
 		"@kunoichi/grab-deps": "^1.3.1",
 		"@wordpress/create-block": "^4.31.0",
-		"@wordpress/env": "^8.13.0",
+		"@wordpress/env": "^9.10.0",
 		"@wordpress/scripts": "^26.18.0",
 		"@wordpress/stylelint-config": "^21.30.0",
 		"cssnano": "^6.0.1",
@@ -57,5 +57,40 @@
 		"imagemin-svgo": "^10.0.1",
 		"npm-watch": "^0.11.0",
 		"postcss-cli": "^11.0.0"
+	},
+	"volta": {
+		"node": "18.20.5"
+	},
+	"watch": {
+		"build:js": {
+			"extensions": "js",
+			"patterns": [
+				"assets/js"
+			]
+		},
+		"build:css": {
+			"extensions": "scss",
+			"patterns": [
+				"assets/scss"
+			]
+		},
+		"lint:js": {
+			"extensions": "js",
+			"patterns": [
+				"assets/js"
+			]
+		},
+		"lint:css": {
+			"extensions": "scss",
+			"patterns": [
+				"assets/scss"
+			]
+		},
+		"dump": {
+			"extensions": "css,js",
+			"patterns": [
+				"dist/{js,css}"
+			]
+		}
 	}
 }

@@ -32,3 +32,51 @@
 		text-align: left;
 	}
 }
+
+.sfwj-member-card {
+
+	&-wrap {
+		margin: 40px 0;
+	}
+
+	&-title {
+		margin-top: 0;
+		margin-bottom: 1em;
+	}
+
+	&-list {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+	}
+
+	flex: 0 1 33%;
+	margin: 0;
+	padding: 1em;
+	text-align: center;
+
+	img {
+		max-width: 100%;
+		width: 150px;
+		height: 150px;
+	}
+
+	.no-photo {
+		display: inline-block;
+		width: 150px;
+		height: 150px;
+		background-color: #f9f9f9;
+	}
+
+	@media screen and (max-width: 450px) {
+		flex: 0 1 50%;
+	}
+
+	&-name {
+		border: none;
+		font-size: 1em;
+		&::after {
+			display: none;
+		}
+	}
+}
