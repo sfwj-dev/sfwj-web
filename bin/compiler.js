@@ -104,7 +104,7 @@ switch ( command ) {
 		} );
 		break;
 	case 'dump':
-		dumpSetting( 'build' );
+		dumpSetting( 'dist' );
 		console.log( 'wp-dependencies.json updated.' );
 		break;
 	case 'js':

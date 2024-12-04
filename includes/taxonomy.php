@@ -36,6 +36,39 @@ function get_author_term( $post_id ) {
 }
 
 /**
+ * 著者に紐づいた新刊情報を取得する
+ *
+ * @param int               $limit
+ * @param null|int|\WP_Post $post
+ *
+ * @return \WP_Query|null
+ */
+function get_author_news( $limit = 3, $post = null ) {
+	$post = get_post( $post );
+	if ( ! $post ) {
+		return null;
+	}
+	$term = get_author_term( $post->ID );
+	if ( ! $term ) {
+		return null;
+	}
+	return new \WP_Query( [
+		'post_type'           => 'members-publication',
+		'posts_per_page'      => $limit,
+		'orderby'             => [ 'date' => 'DESC' ],
+		'ignore_sticky_posts' => true,
+		'post_status'         => 'publish',
+		'tax_query'           => [
+			[
+				'taxonomy' => TAXONOMY_AUTHOR,
+				'field'    => 'id',
+				'terms'    => $term->term_id,
+			],
+		],
+	] );
+}
+
+/**
  * 会員情報から「作家」タグを作成する
  *
  * @param int $post_id 会員の投稿ID
@@ -81,6 +114,39 @@ function get_available_authors() {
 }
 
 /**
+ * 現在の投稿から紐づいた会員情報を取得する
+ *
+ * @param null|int|\WP_Post $post
+ * @return \WP_Post[]
+ */
+function get_tagged_members( $post = null ) {
+	$post = get_post( $post );
+	if ( ! $post ) {
+		return [];
+	}
+	// 作家タグを取得し、会員IDリストに変換する
+	$authors = get_the_terms( $post, 'authors' );
+	if ( ! $authors || is_wp_error( $authors ) ) {
+		return [];
+	}
+	$author_ids = array_values( array_filter( array_map( function( $author ) {
+		return get_term_meta( $author->term_id, TERM_META_AUTHOR_ID, true );
+	}, $authors ) ) );
+	if ( empty( $author_ids ) ) {
+		return [];
+	}
+	$query = new \WP_Query( [
+		'post_type'      => 'member',
+		'post_status'    => 'publish',
+		'post__in'       => $author_ids,
+		'orderby'        => [ 'meta_value' => 'ASC' ],
+		'meta_key'       => '_yomigana',
+		'posts_per_page' => -1,
+	] );
+	return $query->posts;
+}
+
+/**
  * 投稿種別を取得する
  *
  * @param int|null|\WP_Post $post 投稿オブジェクト
@@ -97,6 +163,9 @@ function member_status( $post = null ) {
 	}
 }
 
+/**
+ * 作家タグについての注意書き
+ */
 \add_action( 'add_meta_boxes', function( $post_type ) {
 	if ( 'member' !== $post_type ) {
 		return;
@@ -221,7 +290,7 @@ add_filter( 'manage_authors_custom_column', function( $td, $column_name, $term_i
 }, 10, 3 );
 
 /**
- * 作家タグのメニューを追加する
+ * 作家タグのメニューを会員情報に追加する
  */
 add_action( 'admin_menu', function() {
 	add_submenu_page( 'edit.php?post_type=member', __( '作家タグ', 'sfwj' ), __( '作家タグ', 'sfwj' ), 'edit_posts', 'edit-tags.php?taxonomy=authors&post_type=member' );

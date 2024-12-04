@@ -113,7 +113,7 @@ function get_authors_works( $post = null ) {
 			<?php
 			echo wp_get_attachment_image( $thumbnail_id, 'large', false, [
 				'class' => 'sfwj-profile-img',
-				'alt'   => get_the_title(),
+				'alt'   => esc_attr( get_post()->post_title ),
 			] );
 			?>
 		</figure>
@@ -213,8 +213,75 @@ function get_authors_works( $post = null ) {
 		</ul>
 		<?php
 	}
+	// 新刊案内が存在していれば表示
+	$query = get_author_news( 3 );
+	if ( $query->have_posts() ) {
+		?>
+		<h2><?php printf( esc_html__( '%sの新刊案内', 'sfwj' ), esc_html( get_post()->post_title ) ); ?></h2>
+		<ul class="sfwj-profile-links">
+		<?php foreach ( $query->posts as $news ) : ?>
+			<li>
+				<a href="<?php echo get_permalink( $news ); ?>"><?php echo esc_html( $news->post_title ); ?>（<?php echo mysql2date( get_option( 'date_format' ), $news->post_date ) ?>）</a>
+			</li>
+		<?php endforeach; ?>
+		</ul>
+		<?php if ( $query->found_posts > 3 ) : ?>
+			<div class="wp-block-buttons is-content-justification-center is-layout-flex wp-container-core-buttons-is-layout-1 wp-block-buttons-is-layout-flex">
+				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( get_term_link( get_author_term( get_the_ID() ) ) ); ?>"><?php esc_html_e( 'すべての新刊案内', 'sfwj' ); ?></a></div>
+			</div>
+		<?php endif; ?>
+		<?php
+	}
 	// バッファを追加
 	$content .= ob_get_contents();
 	ob_end_clean();
 	return $content;
 }, 1 );
+
+/**
+ * 新刊情報に会員が紐づいていたら、一覧を表示する
+ */
+add_action( 'lightning_content_after', function() {
+	if ( ! is_singular( 'members-publication' ) ) {
+		return;
+	}
+	$members = get_tagged_members();
+	if ( empty( $members ) ) {
+		return;
+	}
+	?>
+	<div class="sfwj-member-card-wrap">
+		<h2 class="sfwj-member-card-title"><?php esc_html_e( '会員情報', 'sfwj' ); ?></h2>
+		<div class="sfwj-member-card-list">
+			<?php foreach ( $members as $member ) : ?>
+				<div class="sfwj-member-card">
+					<?php
+					$thumbnail_id = get_profile_picture( $member );
+					if ( $thumbnail_id && $i % 2 === 0) {
+						?>
+						<figure class="sfwj-member-card-picture">
+							<?php
+							echo wp_get_attachment_image( $thumbnail_id, 'thumbnail', false, [
+								'class' => 'sfwj-member-card-img',
+								'alt'   => esc_attr( ( $member->post_title ) ),
+							] );
+							?>
+						</figure>
+						<?php
+					} else {
+						echo '<div class="no-photo"></div>';
+					}
+					?>
+					<div class="sfwj-member-card-content">
+						<h3 class="sfwj-member-card-name">
+							<a href="<?php echo esc_url( get_permalink( $member ) ); ?>">
+								<?php echo wp_kses_post( get_the_title( $member ) ); ?>
+							</a>
+						</h3>
+					</div>
+				</div>
+			<?php endforeach; ?>
+		</div>
+	</div>
+	<?php
+} );

@@ -72,7 +72,7 @@ add_action( 'init', function () {
 				wp_register_script( $handle, $src, $dependency['deps'], $dependency['hash'], $dependency['footer'] );
 				break;
 			case 'css':
-				wp_register_style( $handle, $src, $dependency['deps'], $dependency['hash'], $dependency['media'] );
+				wp_register_style( $handle, $src, $dependency['deps'], $dependency['hash'], 'all' );
 				break;
 		}
 	}

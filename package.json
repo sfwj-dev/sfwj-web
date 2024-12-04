@@ -60,5 +60,37 @@
 	},
 	"volta": {
 		"node": "18.20.5"
+	},
+	"watch": {
+		"build:js": {
+			"extensions": "js",
+			"patterns": [
+				"assets/js"
+			]
+		},
+		"build:css": {
+			"extensions": "scss",
+			"patterns": [
+				"assets/scss"
+			]
+		},
+		"lint:js": {
+			"extensions": "js",
+			"patterns": [
+				"assets/js"
+			]
+		},
+		"lint:css": {
+			"extensions": "scss",
+			"patterns": [
+				"assets/scss"
+			]
+		},
+		"dump": {
+			"extensions": "css,js",
+			"patterns": [
+				"dist/{js,css}"
+			]
+		}
 	}
 }
