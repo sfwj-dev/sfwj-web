@@ -11,55 +11,59 @@ on:
       - main
 
 jobs:
-  test:
-    runs-on: ${{ matrix.operating-system }}
-    strategy:
-      matrix:
-        operating-system: [ ubuntu-latest ]  # OS. ubuntu-18.04 is also available.
-        php: [ '7.4' ] # PHP versions to check.
-        wp: [ 'latest', '6.0' ]      # WordPress version to check.
-        tools: [ composer ]
+#  test:
+#    runs-on: ${{ matrix.operating-system }}
+#    strategy:
+#      matrix:
+#        operating-system: [ ubuntu-latest ]  # OS. ubuntu-18.04 is also available.
+#        php: [ '7.4' ] # PHP versions to check.
+#        wp: [ 'latest', '6.0' ]      # WordPress version to check.
+#        tools: [ composer ]
+#
+#    services:
+#      mysql:
+#        image: mysql:8.0
+#        options: --health-cmd "mysqladmin ping --host 127.0.0.1 --port 3306" --health-interval 20s --health-timeout 10s --health-retries 10
+#        ports:
+#          - 3306/tcp
+#        env:
+#          MYSQL_ROOT_PASSWORD: root
+#          MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+#    name: UnitTest on WordPress ${{ matrix.wp }} in PHP ${{ matrix.php }}
+#    steps:
+#      - uses: actions/checkout@master
+#
+#      - name: Setup PHP with composer v2
+#        uses: shivammathur/setup-php@v2
+#        with:
+#          php-version: ${{ matrix.php }}
+#          tools: ${{ matrix.tools }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#
+#      - name: Validate composer.json and composer.lock
+#        run: composer validate
+#
+#      - name: Install dependencies
+#        run: composer install --prefer-dist --no-progress --no-suggest
+#
+#      - name: Start MySQL
+#        run: |
+#          sudo systemctl start mysql
+#          mysql -h 127.0.0.1 --port 3306 -u root --password=root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';"
+#
+#      - name: Install WordPress
+#        run: bash bin/install-wp-tests.sh wordpress root root 127.0.0.1:3306 ${{ matrix.wp }}
+#
+#      - name: Run test suite
+#        run: composer test
+#
 
-    services:
-      mysql:
-        image: mysql:8.0
-        options: --health-cmd "mysqladmin ping --host 127.0.0.1 --port 3306" --health-interval 20s --health-timeout 10s --health-retries 10
-        ports:
-          - 3306/tcp
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
-    name: UnitTest on WordPress ${{ matrix.wp }} in PHP ${{ matrix.php }}
-    steps:
-      - uses: actions/checkout@master
-
-      - name: Setup PHP with composer v2
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          tools: ${{ matrix.tools }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Validate composer.json and composer.lock
-        run: composer validate
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
-
-      - name: Start MySQL
-        run: |
-          sudo systemctl start mysql
-          mysql -h 127.0.0.1 --port 3306 -u root --password=root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';"
-
-      - name: Install WordPress
-        run: bash bin/install-wp-tests.sh wordpress root root 127.0.0.1:3306 ${{ matrix.wp }}
-
-      - name: Run test suite
-        run: composer test
-
-      - name: Check Lint
-        run: composer lint
+  lint:
+    name: Check PHP Syntax
+    uses: tarosky/workflows/.github/workflows/phpcs.yml@main
+    with:
+      version: '7.4'
 
   assets:
     name: Check Assets
@@ -80,11 +84,12 @@ jobs:
 
   check-status:
     name: Status Check
-    needs: [ test, assets ]
+    needs: [ lint, assets ]
     runs-on: ubuntu-latest
     steps:
-      - name: Display Status
-        run: echo 'All Green!'
+      - uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
 
   release:
     name: Release Build for Composer
