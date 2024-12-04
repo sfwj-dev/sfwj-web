@@ -75,7 +75,8 @@ usort( $data, function( $a, $b ) {
 	<ol class="sfwj-nominees-list">
 		<?php
 		foreach ( $data as $row ) :
-			list( $index, $id, $timestamp, $mail, $voted_by, $title, $author, $comment, $sns_available, $status, $checked_by, $work_id, $publisher ) = $row;
+			list( $index, $id, $timestamp, $mail, $voted_by, $title, $author, $comment, $sns_available, $status, $checked_by, $work_id ) = $row;
+			$publisher = $row[12] ?? '';
 			$formatted = new DateTime( $timestamp, new DateTimeZone( wp_timezone_string() ) );
 			?>
 			<li class="sfwj-nominees-item" data-index="<?php echo esc_attr( $index ); ?>">
@@ -84,9 +85,11 @@ usort( $data, function( $a, $b ) {
 					<span class="sfwj-nominees-title-txt">
 						<?php echo esc_html( $author . ' ' . $title ); ?>
 					</span>
+					<?php if ( $publisher ) : ?>
 					<span class="sfwj-nominees-publisher">
 						<?php echo esc_html( $publisher ); ?>
 					</span>
+					<?php endif; ?>
 				</h3>
 				<div class="sfwj-nominees-meta">
 					<span class="sfwj-nominees-voted_by">
