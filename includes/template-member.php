@@ -221,7 +221,7 @@ function get_authors_works( $post = null ) {
 		<ul class="sfwj-profile-links">
 		<?php foreach ( $query->posts as $news ) : ?>
 			<li>
-				<a href="<?php echo get_permalink( $news ); ?>"><?php echo esc_html( $news->post_title ); ?>（<?php echo mysql2date( get_option( 'date_format' ), $news->post_date ) ?>）</a>
+				<a href="<?php echo get_permalink( $news ); ?>"><?php echo esc_html( $news->post_title ); ?>（<?php echo mysql2date( get_option( 'date_format' ), $news->post_date ); ?>）</a>
 			</li>
 		<?php endforeach; ?>
 		</ul>
@@ -257,7 +257,7 @@ add_action( 'lightning_content_after', function() {
 				<div class="sfwj-member-card">
 					<?php
 					$thumbnail_id = get_profile_picture( $member );
-					if ( $thumbnail_id && $i % 2 === 0) {
+					if ( $thumbnail_id ) {
 						?>
 						<figure class="sfwj-member-card-picture">
 							<?php

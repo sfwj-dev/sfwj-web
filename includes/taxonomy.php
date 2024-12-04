@@ -260,7 +260,7 @@ add_filter( 'manage_edit-authors_columns', function( $columns ) {
 	$new_columns = [];
 	foreach ( $columns as $key => $label ) {
 		if ( 'description' === $key ) {
-			$new_columns[ 'member' ] = __( '会員', 'sfwj' );
+			$new_columns['member'] = __( '会員', 'sfwj' );
 		} else {
 			$new_columns[ $key ] = $label;
 		}
@@ -273,7 +273,7 @@ add_filter( 'manage_edit-authors_columns', function( $columns ) {
  */
 add_filter( 'manage_authors_custom_column', function( $td, $column_name, $term_id ) {
 	if ( 'member' === $column_name ) {
-		$td = sprintf( '<span style="color: lightgray">%s</span>', esc_html__( '登録なし', 'sfwj' ) );
+		$td        = sprintf( '<span style="color: lightgray">%s</span>', esc_html__( '登録なし', 'sfwj' ) );
 		$member_id = get_term_meta( $term_id, TERM_META_AUTHOR_ID, true );
 		if ( $member_id ) {
 			$member = get_post( $member_id );

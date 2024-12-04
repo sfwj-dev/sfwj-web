@@ -126,17 +126,17 @@ function sfwj_extract_sheet_id( $url ) {
 	$sheet_id = null;
 	// URLを分解しクエリパラメータから取得する
 	$parsed_url = parse_url( $url );
-	if ( isset( $parsed_url[ 'query' ] ) ) {
-		parse_str( $parsed_url[ 'query' ], $params );
-		if ( isset( $params[ 'gid' ] ) ) {
-			$sheet_id = $params[ 'gid' ];
+	if ( isset( $parsed_url['query'] ) ) {
+		parse_str( $parsed_url['query'], $params );
+		if ( isset( $params['gid'] ) ) {
+			$sheet_id = $params['gid'];
 		}
 	}
 	// ハッシュ部分からgidを取得（上記で取得できなかった場合のみ）
-	if ( is_null( $sheet_id ) && isset( $parsed_url[ 'fragment' ] ) ) {
-		parse_str( $parsed_url[ 'fragment' ], $fragments );
-		if ( isset( $fragments[ 'gid' ] ) ) {
-			$sheet_id = $fragments[ 'gid' ];
+	if ( is_null( $sheet_id ) && isset( $parsed_url['fragment'] ) ) {
+		parse_str( $parsed_url['fragment'], $fragments );
+		if ( isset( $fragments['gid'] ) ) {
+			$sheet_id = $fragments['gid'];
 		}
 	}
 	if ( ! $sheet_id ) {
